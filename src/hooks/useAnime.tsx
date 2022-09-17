@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { animeApi } from "../api/config"
-import { Anime, AnimeResponse } from "../interfaces"
+import { animeApi, pokeApi } from "../api/config"
+import { Anime, AnimeResponse, Pokemon, PokemonResponse } from "../interfaces";
 
 export const useAnime = () => {
     const [anime, setAnime] = useState<Anime[]>([])
@@ -9,17 +9,22 @@ export const useAnime = () => {
 
     const getAnime = async (query: string) => {
         try {
-            const { data } = await animeApi.get<AnimeResponse>(`?q=${query}`)
-            setAnime(data.data)
+            // const { data } = await animeApi.get<AnimeResponse>(`?q=${query}`)
+            const data = await fetch(`https://api.jikan.moe/v4/anime?q=${query}`, {
+                method: 'GET',
+            })
+            const resp: AnimeResponse = await data.json()
+            setAnime(resp.data)
             setLoading(false)
         } catch (error) {
             setError(true)
             setLoading(false)
         }
     }
+
     useEffect(() => {
-        getAnime("")
+        getAnime("sword");
     }, [])
 
-    return { anime, loading, error }
+    return { anime, loading, error, getAnime }
 }
