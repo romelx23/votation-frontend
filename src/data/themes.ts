@@ -5,12 +5,12 @@ export const themes = [
     path: "anime",
     image: "https://pbs.twimg.com/media/FcL1gQkXwAEjKKG?format=jpg&name=large",
   },
-  {
-    id: 2,
-    name: "Pokemon",
-    path: "pokemon",
-    image: "https://pbs.twimg.com/media/FcNL6KVWIAANpH8?format=jpg&name=large",
-  },
+  // {
+  //   id: 2,
+  //   name: "Pokemon",
+  //   path: "pokemon",
+  //   image: "https://pbs.twimg.com/media/FcNL6KVWIAANpH8?format=jpg&name=large",
+  // },
   {
     id: 3,
     name: "Crear",

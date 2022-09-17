@@ -19,7 +19,7 @@ export const Socket_INITIAL_STATE: SocketState = {
 
 export const SocketProvider: FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(SocketReducer, Socket_INITIAL_STATE);
-  const baseUrl = "http://localhost:8080";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
 
   const { socket, online } = useSocket(baseUrl);
   const dispatchVotation = useAppDispatch();

@@ -26,6 +26,7 @@ export const useVotation = () => {
         }
         createVotation(votation);
         dispatch(clearAnimeList());
+        navigate('/');
     }
 
     const getVotation = async (id: string) => {

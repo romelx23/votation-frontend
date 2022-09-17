@@ -14,7 +14,6 @@ export const SelectedAnime = () => {
     const { handleStorage } = useLocalSotarage();
     const { anime, loading, getAnime, error } = useAnime();
     const { animeList, configuration: { cantidad }, show } = useAppSelector(state => state.anime);
-    const dispatch = useAppDispatch();
     const { handleShow } = useUi();
     const { values, handleInputChange: handleChange, reset } = useForm<Search>({
         search: ''

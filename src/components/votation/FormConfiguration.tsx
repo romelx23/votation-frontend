@@ -1,47 +1,37 @@
 import React, { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form';
 import { useAppDispatch } from '../../hooks';
-import { useForm } from '../../hooks/useForm';
 import { AddForm } from '../../interfaces';
 import { setConfiguration } from '../../store/slices';
 
-const initialState = {
-    name: '',
-    description: '',
-    image: '',
-    cantidad: '',
-    autor: '',
-    color: '',
-}
-
 export const FormConfiguration = () => {
-    const { values, handleInputChange: handleChange, setValues } = useForm<AddForm>({
-        name: '',
-        description: '',
-        image: '',
-        cantidad: 10,
-        autor: '',
-        color: '#8b5cf6',
+    const { getValues, setValue, control, getFieldState, register, handleSubmit, watch, formState: { errors }, trigger, reset } = useForm<AddForm>({
+        defaultValues: {
+            name: '',
+            description: '',
+            image: '',
+            cantidad: 10,
+            autor: '',
+            color: '#8b5cf6',
+        }
     });
     const dispatch = useAppDispatch();
     const [save, setSave] = useState(false);
-    const [message, setMessage] = useState(initialState);
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (values.name.trim().length === 0) return setMessage({ ...message, name: 'El nombre es obligatorio' });
-        if (values.description.trim().length === 0) return setMessage({ ...message, description: 'La descripción es obligatoria' });
-        if (values.cantidad < 1) return setMessage({ ...message, cantidad: 'La cantidad debe ser mayor a 0' });
-        console.log('guardado');
-        localStorage.setItem('form', JSON.stringify(values));
-        setMessage(initialState);
-        dispatch(setConfiguration(values));
+    const onSubmit = () => {
+        localStorage.setItem('form', JSON.stringify(getValues()));
+        dispatch(setConfiguration(getValues()));
     }
     const loadForm = () => {
         const form = localStorage.getItem('form');
         if (form) {
-            // const { name, description, image, cantidad, autor, color } = JSON.parse(form);
             const formData = JSON.parse(form);
-            setValues({ ...formData });
-            dispatch(setConfiguration(values));
+            setValue('name', formData.name);
+            setValue('description', formData.description);
+            setValue('image', formData.image);
+            setValue('cantidad', formData.cantidad);
+            setValue('autor', formData.autor);
+            setValue('color', formData.color);
+            dispatch(setConfiguration(formData));
             setSave(true);
         }
     }
@@ -55,70 +45,64 @@ export const FormConfiguration = () => {
             <h1 className='text-center font-semibold text-lg'>Configuración</h1>
             <form
                 autoComplete='off'
-                onSubmit={handleSubmit}
+                onSubmit={handleSubmit(onSubmit)}
                 className="flex flex-col w-full max-w-[500px]">
                 <label htmlFor="cantidad">Nombre del Top</label>
                 <input type="text"
                     autoComplete='off'
-                    name='name'
-                    value={values.name}
-                    onChange={handleChange}
+                    {...register("name", { required: true })}
                     placeholder='Cantidad' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
                 {
-                    message.name && <p className='text-red-500'>{message.name}</p>
+                    errors.name && <p className='text-red-500'>Este campo es requerido</p>
                 }
                 <label htmlFor="cantidad">Descripción del Top</label>
                 <input type="text"
                     autoComplete='off'
-                    name='description'
-                    value={values.description}
-                    onChange={handleChange}
+                    {...register("description", { required: true })}
                     placeholder='Descripción' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
                 {
-                    message.description && <p className='text-red-500'>{message.description}</p>
+                    errors.description && <p className='text-red-500'>
+                        Este campo es requerido
+                    </p>
                 }
                 <label htmlFor="cantidad">Cantidad</label>
                 <input type="number"
                     autoComplete='off'
-                    name='cantidad'
-                    value={values.cantidad}
-                    onChange={handleChange}
+                    {...register("cantidad", { required: true })}
                     placeholder='Cantidad' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
                 {
-                    message.cantidad && <p className='text-red-500'>{message.cantidad}</p>
+                    errors.cantidad && <p className='text-red-500'>Este campo es requerido
+                    </p>
                 }
                 <label htmlFor="autor">Autor</label>
                 <input type="text"
                     autoComplete='off'
-                    name='autor'
-                    value={values.autor}
-                    onChange={handleChange}
+                    {...register("autor", { required: true })}
                     placeholder='Autor' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
                 {
-                    message.autor && <p className='text-red-500'>{message.autor}</p>
+                    errors.autor && <p className='text-red-500'>Este campo es requerido
+                    </p>
                 }
                 <label htmlFor="color">Color(opcional)</label>
                 <input type="color"
                     autoComplete='off'
-                    name='color'
-                    value={values.color}
-                    onChange={handleChange}
+                    {...register("color", { required: true })}
                     placeholder='Cantidad' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
                 {
-                    message.color && <p className='text-red-500'>{message.color}</p>
+                    errors.color && <p className='text-red-500'>Este campo es requerido
+                    </p>
                 }
                 <label htmlFor="image">Imagen</label>
                 <input type="text"
                     autoComplete='off'
-                    name='image'
-                    value={values.image}
-                    onChange={handleChange}
+                    {...register("image", { required: true })}
                     placeholder='Ingrese imagen' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
                 {
-                    message.image && <p className='text-red-500'>{message.image}</p>
+                    errors.image && <p className='text-red-500'>Este campo es requerido
+                    </p>
                 }
                 <div className="flex justify-center pb-4">
-                    <img src={values.image ? values.image : 'https://www.unfe.org/wp-content/uploads/2019/04/SM-placeholder.png'} alt="imagen de la votación" className='w-28 h-28 object-cover' />
+                    <img src={watch('image') ? watch('image') : 'https://www.unfe.org/wp-content/uploads/2019/04/SM-placeholder.png'} alt="imagen de la votación" className='w-28 h-28 object-cover' />
                 </div>
                 <button className='btn h-10 gap-2'>
                     {
