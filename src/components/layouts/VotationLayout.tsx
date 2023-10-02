@@ -9,7 +9,7 @@ interface Props {
 
 export const VotationLayout: FC<Props> = ({ children }) => {
     return (
-        <div className='min-h-screen w-full'>
+        <div className='min-h-screen w-full transition-opacity'>
             <Navbar />
             {children}
             <BottomBar />

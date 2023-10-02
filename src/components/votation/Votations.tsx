@@ -14,7 +14,7 @@ export const Votations = () => {
     const navigate = useNavigate();
 
     const handleVotation = (id: string) => {
-        navigate(`/votar/${id}`);
+        navigate(`/votar/${ id }`);
     }
 
     return (
@@ -24,12 +24,12 @@ export const Votations = () => {
                     <div
                         onClick={() => handleVotation(votation.uid)}
                         key={votation.uid}
-                        className='flex flex-col relative md:h-28 h-32 cursor-pointer w-full sm:w-96'>
-                        <div className="absolute flex justify-center items-center w-full h-full font-semibold">
+                        className='flex flex-col relative md:h-36 h-32 cursor-pointer w-full sm:w-96 group hover:scale-110 transition-transform'>
+                        <div className="absolute flex justify-center items-center w-full h-full font-semibold text-white z-50">
                             <p className='pr-4'>{i + 1})</p>
                             <p>{votation.title}</p>
                         </div>
-                        <img src={votation.image ? votation.image : 'https://pbs.twimg.com/media/FcLcDPlXgAITvgp?format=jpg&name=medium'} alt="10-mejores-openings-animes" title='10 mejores openings' className=' w-full h-full opacity-25 object-cover' />
+                        <img src={votation.image ? votation.image : 'https://pbs.twimg.com/media/FcLcDPlXgAITvgp?format=jpg&name=medium'} alt="10-mejores-openings-animes" title='10 mejores openings' className=' w-full h-full opacity-25 object-cover transition duration-300 ease-in-out group-hover:opacity-75' />
                     </div>
                 ))
             }

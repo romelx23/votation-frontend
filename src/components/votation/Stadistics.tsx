@@ -44,7 +44,7 @@ export const Stadistics = () => {
     const labels = items.map(item => item.name);
     const colors = items.map(item => {
         const color = Math.floor(Math.random() * 16777215).toString(16);
-        return `#${color}`;
+        return `#${ color }`;
     });
 
     const values = items.map(item => item.votes);
@@ -110,22 +110,24 @@ export const Stadistics = () => {
     return (
         <div className='flex flex-col items-center w-full px-8'>
             <h1 className='text-2xl text-center font-semibold'>Estadísticas</h1>
-            <div className="flex w-full max-w-5xl flex-col md:flex-row">
+            <div className="flex w-full max-w-5xl flex-col md:flex-row flex-wrap">
                 <div className="w-full max-w-2xl">
                     <Bar
                         data={data}
                         options={options}
                     />
                 </div>
-                <div className='flex flex-grow flex-col'>
+                <div className='flex flex-grow flex-wrap gap-10 my-3 '>
                     {
                         items.map((item, index) => (
-                            <div key={item.uid} className='flex flex-col items-center justify-center gap-2'>
-                                <img src={item.image} alt={item.name} className='w-10 h-10 rounded-full' />
+                            <div key={item.uid} className='flex flex-col items-center gap-2 py-3 px-2'>
+                                <img src={item.image} alt={item.name} className='w-14 h-14 rounded-full' />
                                 <p
-                                    className='overflow-hidden overflow-ellipsis w-28'
-                                >{item.name}</p>
-                                <p className='font-semibold text-lg'>{item.votes}</p>
+                                    className='overflow-hidden overflow-ellipsis w-28 flex-grow-[1]'
+                                >{item.name.slice(0, 25)}</p>
+
+                                <p className='font-semibold text-2xl flex-grow-[2] flex items-end'>{item.votes}</p>
+
                             </div>
                         ))
                     }
