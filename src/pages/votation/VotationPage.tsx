@@ -1,22 +1,45 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { Stadistics, VotationLayout } from '../../components'
-import { useAppSelector, useVotation, useVisible } from '../../hooks';
+import { useAppSelector, useVotation, useVisible, useAppDispatch } from '../../hooks';
+import { StadisticsTopTen } from '../../components/votation/StadisticsTopTen';
+import { toast } from 'sonner';
+import { setAnimeList, setAnimeListCollection, setConfiguration } from '../../store/slices';
 
 export const VotationPage = () => {
     const { id } = useParams();
+
     const navigate = useNavigate();
+
     const { getVotation, handleVotation } = useVotation();
+    const dispatch = useAppDispatch();
+
     const [show, setShow] = useState(true);
+    const [showTen, setShowTen] = useState(true);
+
     const { votation: data, alreadyVoted } = useAppSelector(state => state.votation);
+
     const { items, votation } = data;
     const isVoted = alreadyVoted.includes(votation?.uid);
-    const currentDate = new Date(votation?.date);
+    // const isVoted = localStorage.getItem('voted') === votation?.uid;
+
+    const currentDate = new Date(votation?.createdAt);
+    const expirationDate = new Date(votation?.expiration);
     const [slected, setSlected] = useState<string[]>([]);
-    const { toggleInfo, counter, isVisible } = useVisible(40, 500);
+    const [toggleInfo, setToggleInfo] = useState(false);
+    // const { toggleInfo, counter, isVisible } = useVisible(40, 500);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = e.target;
+
+        // no mas de 5 seleccionados
+
+        if (slected.length >= 5) {
+            e.preventDefault();
+            toast.error('Solo puedes seleccionar hasta 5 animes');
+            return;
+        }
+
         if (checked) {
             setSlected([...slected, value]);
         }
@@ -26,8 +49,52 @@ export const VotationPage = () => {
     }
     const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (votation?.expiration < new Date().toISOString()) {
+            toast.error('La votación ha expirado');
+            return;
+        }
+
+        if (slected.length === 0) {
+            toast.error('No has seleccionado ningún anime');
+            return;
+        }
+        if (isVoted) {
+            toast.error('Ya has votado en esta votación');
+            return;
+        }
+
         handleVotation(slected, votation.uid);
     }
+
+    const handleCopyTemplate = () => {
+        // const text = items.map(item => item.name).join('\n');
+        // navigator.clipboard.writeText(text);
+        // toast.success('Plantilla copiada al portapapeles');
+
+        const animeList = items.map(item => ({
+            mal_id: item.mal_id,
+            title: item.name,
+            image: item.image
+        }));
+
+        const formData = {
+            name: votation.title,
+            description: votation.description,
+            image: votation.image,
+            cantidad: items.length,
+            autor: votation.creator,
+            color: votation.color,
+            expiration: votation.expiration,
+        }
+
+        // setear la configuración del formulario
+        dispatch(setConfiguration(formData));
+        // setear los animes
+        dispatch(setAnimeListCollection(animeList));
+        navigate('/seleccionar-tema/anime');
+    }
+
     useEffect(() => {
         console.log('votation page', id);
         if (!id) navigate('/');
@@ -38,19 +105,41 @@ export const VotationPage = () => {
         <VotationLayout>
             <div className="flex flex-col items-center my-2">
                 <div className="w-full flex justify-center gap-1 py-2">
-                    <div className="flex w-full max-w-[600px]">
-                        <button
-                            onClick={() => setShow(true)}
-                            className={`py-2 font-semibold flex-grow ${ show ? 'bg-violet-500' : 'bg-gray-500' }`}>
-                            Votaciones
-                            <i className="fas fa-vote-yea pl-2"></i>
-                        </button>
-                        <button
-                            onClick={() => setShow(false)}
-                            className={`py-2 font-semibold flex-grow ${ show ? 'bg-gray-500' : 'bg-violet-500' }`}>
-                            Resultados
-                            <i className="fas fa-poll-h pl-2"></i>
-                        </button>
+                    <div className="flex flex-col w-full max-w-[600px]">
+                        <div className="flex">
+                            <button
+                                onClick={() => setShow(true)}
+                                className={`py-2 font-semibold flex-grow ${ show ? 'bg-violet-600' : 'bg-gray-600' }`}>
+                                Votaciones
+                                <i className="fas fa-vote-yea pl-2"></i>
+                            </button>
+                            <button
+                                onClick={() => setShow(false)}
+                                className={`py-2 font-semibold flex-grow ${ show ? 'bg-gray-600' : 'bg-violet-600' }`}>
+                                Resultados
+                                <i className="fas fa-poll-h pl-2"></i>
+                            </button>
+                        </div>
+                        {
+                            !show &&
+                            <>
+                                <div className="flex pt-2 justify-end">
+                                    <button
+                                        onClick={() => setShowTen(true)}
+                                        className={`py-2 font-semibold px-10 ${ showTen ? 'bg-violet-600' : 'bg-gray-600' }`}>
+                                        Top 10
+                                        <i className="fas fa-vote-yea pl-2"></i>
+                                    </button>
+                                    <button
+                                        onClick={() => setShowTen(false)}
+                                        className={`py-2 font-semibold px-10 ${ showTen ? 'bg-gray-600' : 'bg-violet-600' }`}>
+                                        Todos los votos
+                                        <i className="fas fa-poll-h pl-2"></i>
+                                    </button>
+                                </div>
+                            </>
+                        }
+
                     </div>
                 </div>
                 {
@@ -63,22 +152,42 @@ export const VotationPage = () => {
                                 <p>{votation.description}</p>
                                 <p className='text-base text-gray-500'>Creado por: {votation.creator}</p>
                                 <p className='text-base text-gray-500'>Fecha de creación: {currentDate.toLocaleDateString()}</p>
+                                <p className='text-base text-gray-500'>Fecha de Expiración: {expirationDate.toLocaleDateString()}</p>
+                                {
+                                    votation?.expiration < new Date().toISOString() && <p className='bg-red-600 text-white text-center font-bold leading-4 absolute -rotate-[50deg] -left-4 top-10 px-4 py-1'>
+                                        lavotación <br />
+                                        ha terminado
+                                    </p>
+                                }
                                 <button
-                                    onClick={toggleInfo}
+                                    onClick={() => {
+                                        setToggleInfo(!toggleInfo)
+                                    }}
                                     title='Instrucciones'
                                     className='absolute top-4 right-2 hover:bg-purple-500 py-2 px-2 rounded-full transition-colors'>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                                     </svg>
                                 </button>
+
                                 {
-                                    isVisible && (
-                                        <div className={`flex justify-center items-center bg-violet-600 rounded-xl text-white px-2 my-3`}>
+                                    votation.type_form === 'anime' && (
+                                        <button
+                                            onClick={handleCopyTemplate}
+                                            title='Copiar Plantilla'
+                                            className='absolute top-14 right-2 hover:bg-blue-500 py-2 px-2 rounded-full transition-colors'>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" strokeLinecap="round" strokeLinejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>
+                                        </button>
+                                    )
+                                }
+                                {
+                                    toggleInfo && (
+                                        <div className={`flex justify-center items-center bg-violet-600 text-white px-2 my-3`}>
                                             <div className="w-full max-w-[500px] p-2 rounded-lg">
                                                 <h1 className='text-2xl text-center font-semibold'>Instrucciones</h1>
-                                                <span>
+                                                {/* <span>
                                                     {counter}
-                                                </span>
+                                                </span> */}
                                                 <p className='text-base'>- Selecciona los animes que más te gusten y luego presiona el botón votar.</p>
                                                 <p className='text-base'>- Puedes seleccionar hasta 5 animes.</p>
                                                 <p className='text-base'>- Puedes votar una sola vez por votación.</p>
@@ -87,7 +196,7 @@ export const VotationPage = () => {
                                     )
                                 }
 
-                                <form onSubmit={handleSubmit} className='w-full'>
+                                <form onSubmit={handleSubmit} className='w-full z-40'>
                                     <ul className='flex flex-col gap-2 w-full px-4'>
                                         {
                                             items.map((item, i) => (
@@ -113,21 +222,27 @@ export const VotationPage = () => {
                                     </ul>
                                     <button
                                         type="submit"
-                                        disabled={isVoted || slected.length === 0}
+                                        // disabled={isVoted || slected.length === 0}
                                         className="btn__vote"
                                     >
                                         Votar
                                     </button>
                                     {
-                                        isVoted && <p className='text-center text-red-500'>Ya has votado en esta votación</p>
+                                        isVoted && <p className='text-center text-green-500 pt-3'>Ya has votado en esta votación</p>
                                     }
                                     {
-                                        slected.length === 0 && isVoted && <p className='text-center text-red-500'>No has seleccionado ningún anime</p>
+                                        slected.length === 0 && isVoted && <p className='text-center text-red-500 pt-3'>No has seleccionado ningún anime</p>
                                     }
                                 </form>
                             </div>
                         )
-                        : <Stadistics />
+                        : (
+                            showTen ?
+                                // <Stadistics topTen={true} />
+                                <StadisticsTopTen />
+                                :
+                                <Stadistics />
+                        )
                 }
             </div>
             <div className="h-20 md:h-10"></div>

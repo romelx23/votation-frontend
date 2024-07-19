@@ -1,56 +1,143 @@
-import React, { useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector, useLocalSotarage } from '../../hooks';
+import { useEffect, useState } from 'react'
+import { useAppSelector, useLocalSotarage } from '../../hooks';
 import { useAnime } from '../../hooks/useAnime';
-import { useForm } from '../../hooks/useForm';
-import { AddForm, Anime, Search } from '../../interfaces';
+// import { useForm } from '../../hooks/useForm';
+// import { AddForm, Anime, Search } from '../../interfaces';
 import { VotationLayout } from '../layouts/VotationLayout';
-import { ButtonAnime } from './ButtonAnime';
+// import { ButtonAnime } from './ButtonAnime';
 import { FormConfiguration } from './FormConfiguration';
 import { ModalAnime } from './ModalAnime';
 import { useUi } from '../../hooks/useUi';
-import { ToastVotation } from './ToastVotation';
+import { AddAnimePage } from './AddAnimePage';
+import { ConfirmationPage } from './ConfirmationPage';
+// import { ToastVotation } from './ToastVotation';
 
 export const SelectedAnime = () => {
     const { handleStorage } = useLocalSotarage();
-    const { anime, loading, getAnime, error } = useAnime();
-    const { animeList, configuration: { cantidad }, show } = useAppSelector(state => state.anime);
-    const { handleShow } = useUi();
-    const { values, handleInputChange: handleChange, reset } = useForm<Search>({
-        search: ''
-    });
 
-    const [state, setState] = useState(true);
-    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        console.log(values);
-        getAnime(values.search);
-        reset();
-    }
+    const { animeList, configuration: { cantidad }, show, errorMessage } = useAppSelector(state => state.anime);
+
+    const { anime, loading, getAnime, error } = useAnime();
+
+    const { handleShow } = useUi();
+    // const { values, handleInputChange: handleChange, reset } = useForm<Search>({
+    //     search: ''
+    // });
+
+    // const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault();
+    //     console.log(values);
+    //     getAnime(values.search);
+    //     reset();
+    // }
+
+    // console.log(errorMessage);
+
+    const [state, setState] = useState(1);
+
+    const widthProgress = state === 1 ? 'w-1/3'
+        : state === 2 ? 'w-2/3'
+            : 'w-full';
 
     useEffect(() => {
         handleStorage();
     }, [])
 
+    console.log(errorMessage);
+    console.log(animeList.length);
+    console.log(cantidad);
+
     return (
         <VotationLayout>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center pt-4">
                 <h1 className='text-lg font-semibold'>Añade Animes para el Top 👑</h1>
-                <div className="flex flex-col w-full items-center max-w-[500px]
+
+
+                <div className="w-full max-w-[500px] flex justify-between text-sm mt-2">
+                    <span>Paso 1</span>
+                    <span>Paso 2</span>
+                    <span>Paso 3</span>
+                </div>
+                <div className="w-full max-w-[500px] my-2 h-3 border-2 border-white rounded-xl">
+                    <div className={`h-full transition-all delay-100 bg-blue-500 rounded-xl ${ widthProgress }`}></div>
+                </div>
+
+
+                <div className="flex flex-col w-full items-center max-w-xl
                 sticky top-[20px] z-10 bg-[#242424]">
-                    <div className="w-full flex gap-1">
+
+                    {/* <div className="w-full flex gap-1">
                         <button
+                            title='Configuración'
                             onClick={() => setState(true)}
                             className={`py-2 font-semibold flex-grow ${ state ? 'bg-violet-500' : 'bg-gray-500' }`}>
                             Configuración
                             <i className="fas fa-cog"></i>
                         </button>
                         <button
+                            title='Añadir Anime'
                             onClick={() => setState(false)}
                             className={`py-2 font-semibold flex-grow ${ state ? 'bg-gray-500' : 'bg-violet-500' }`}>
                             Añadir Anime
                             <i className="fas fa-plus"></i>
                         </button>
+                    </div> */}
+
+                    <div className="w-full flex justify-between gap-1 max-w-xl my-2">
+                        {
+                            state === 2 &&
+                            <button
+                                title='Configuración'
+                                onClick={() => {
+                                    window.scrollTo({
+                                        top: 0,
+                                        behavior: 'smooth'
+                                    });
+                                    setState(1);
+                                }}
+                                type='button'
+                                className={`py-1 text-sm font-semibold flex-grow w-10 flex justify-center ${ state ? 'bg-violet-500' : 'bg-gray-500' }`}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
+                                Volver a Configuración
+                            </button>
+                        }
+                        {
+                            (state === 3) &&
+                            <button
+                                title='Añadir Anime'
+                                onClick={() => {
+                                    window.scrollTo({
+                                        top: 0,
+                                        behavior: 'smooth'
+                                    });
+                                    setState(2)
+                                }}
+                                type='button'
+                                className={`py-1 text-sm font-semibold flex-grow w-10 flex justify-center ${ state ? 'bg-gray-500' : 'bg-violet-500' }`}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
+                                Agregar Anime
+                            </button>
+                        }
+                        {
+                            state === 2 && (animeList.length == cantidad) &&
+                            <button
+                                title='Siguiente Paso'
+                                onClick={() => {
+                                    window.scrollTo({
+                                        top: 0,
+                                        behavior: 'smooth'
+                                    });
+                                    setState(3)
+                                }}
+                                type='button'
+                                className={`py-1 text-sm font-semibold flex-grow w-10 flex justify-center ${ state ? 'bg-gray-500' : 'bg-violet-500' }`}>
+                                Siguiente Paso
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
+                            </button>
+                        }
+
                     </div>
+
                     <div className="py-2 w-full flex justify-between items-center font-semibold">
                         <p>Escogidos :
                             <span className='rounded-lg bg-blue-600 py-2 px-2'>
@@ -59,7 +146,9 @@ export const SelectedAnime = () => {
                         </p>
                         <button
                             onClick={() => handleShow(true)}
-                            className='btn gap-2'>
+                            className='btn gap-2'
+                            title='Ver Animes'
+                        >
                             <span>
                                 Ver Animes
                             </span>
@@ -71,46 +160,23 @@ export const SelectedAnime = () => {
                     </div>
                 </div>
 
-                {state ?
-                    <FormConfiguration />
+                {state === 1 ?
+                    <FormConfiguration
+                        // state={state}
+                        setState={setState}
+                    />
                     :
-                    <div>
-                        <form
-                            autoComplete='off'
-                            onSubmit={handleSearch}
-                            className="flex w-full items-center max-w-[500px] sticky top-[110px] z-10 bg-[#242424]">
-                            <input type="text"
-                                autoComplete='off'
-                                name='search'
-                                value={values.search}
-                                onChange={handleChange}
-                                placeholder='Buscar Anime' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
-                            <button className='btn h-10'>
-                                <i className="fas fa-search"></i>
-                            </button>
-                        </form>
-                        <div className='flex flex-col gap-4'>
-                            {loading ? <h1>Loading...</h1> : anime.map((anime) => {
-                                return <div key={anime.mal_id}>
-                                    <div className='pb-2 flex items-center font-semibold relative max-w-[500px] justify-between'>
-                                        <h1 className="w-64 text-ellipsis overflow-hidden">{anime.title}</h1>
-                                        <p className='absolute top-0 left-0'>#{anime.mal_id}</p>
-                                        <div className='content-image'>
-                                            <img src={anime.images.jpg.image_url} alt={anime.title} className="w-40 h-40 object-cover" />
-                                        </div>
-                                    </div>
-                                    <ButtonAnime anime={anime} />
-                                </div>
-                            })}
-                            {
-                                anime.length === 0 && <h1>No hay resultados</h1>
-                            }
-                            {
-                                error && <h1>Hubo un error al buscar</h1>
-                            }
-                        </div>
-                    </div>
+                    state === 2 ?
+                        <AddAnimePage
+                            anime={anime}
+                            loading={loading}
+                            getAnime={getAnime}
+                            error={error}
+                        />
+                        :
+                        <ConfirmationPage />
                 }
+
             </div>
             <div className="h-20"></div>
             {

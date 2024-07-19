@@ -18,16 +18,9 @@ ChartJS.register(
     Tooltip,
     Legend
 );
+export const StadisticsTopTen = () => {
 
-interface StadisticsProps {
-    quantity?: number;
-}
-
-export const Stadistics = ({
-    quantity = 10
-}) => {
-
-    const { votation: { items, votation } } = useAppSelector(state => state.votation);
+    const { votation: { items } } = useAppSelector(state => state.votation);
 
     const options = {
         indexAxis: 'y' as const,
@@ -51,7 +44,7 @@ export const Stadistics = ({
                 ticks: {
                     autoSkip: false, // Don't automatically skip labels
                     // maxRotation: 90, 
-                    // minRotation: 45, 
+                    // minRotation: 45,
                     font: {
                         size: 16, // Set font size for labels
                         color: '#ffffff' // Set font color to white
@@ -86,18 +79,17 @@ export const Stadistics = ({
                     beginAtZero: true // Start y-axis at zero
                 },
                 afterFit: (axis: any) => {
-                    axis.width = 300; // Set a fixed width for the y-axis to accommodate long labels
-                    axis.paddingLeft = 20;
-                    axis.paddingRight = 20;
-
+                    axis.width = 200; // Set a fixed width for the y-axis to accommodate long labels
                 }
             }
         },
     };
 
+    // Obtener el top 10 de las votaciones
     const topItems = items
-        .slice() // Clonar
+        .slice() // Crear una copia de los items
         .sort((a, b) => b.votes - a.votes) // Ordenar por número de votos descendente
+        .slice(0, 10); // Seleccionar los primeros 10
 
     const labels = topItems.map(item => item.name);
     const colors = topItems.map(item => {
@@ -166,16 +158,18 @@ export const Stadistics = ({
         ],
     };
 
+
+
     return (
         <div className='flex flex-col items-center w-full px-8'>
             <h1 className='text-2xl text-center font-semibold'>Estadísticas</h1>
             <div className="flex w-full max-w-5xl flex-col md:flex-row flex-wrap">
-                <div className="w-full max-w-2xl">
+                <div className="w-full max-w-5xl">
                     <Bar
                         data={data}
                         options={options}
                         width={150}
-                        height={300}
+                        height={150}
                     />
                 </div>
                 <div className='flex flex-grow flex-wrap gap-10 my-3 place-content-center'>

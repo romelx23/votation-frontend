@@ -1,122 +1,221 @@
-import React, { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form';
-import { useAppDispatch } from '../../hooks';
-import { AddForm } from '../../interfaces';
-import { setConfiguration } from '../../store/slices';
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useAppDispatch } from "../../hooks";
+import { AddForm } from "../../interfaces";
+import { setConfiguration, setErrorMessage } from "../../store/slices";
+import { toast } from "sonner";
 
-export const FormConfiguration = () => {
-    const { getValues, setValue, control, getFieldState, register, handleSubmit, watch, formState: { errors }, trigger, reset } = useForm<AddForm>({
+interface FormConfigurationProps {
+    setState: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState }) => {
+    const {
+        getValues,
+        setValue,
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors, isValid },
+        trigger,
+        reset
+    } = useForm<AddForm>({
         defaultValues: {
-            name: '',
-            description: '',
-            image: '',
+            name: "",
+            description: "",
+            image: "",
             cantidad: 10,
-            autor: '',
-            color: '#8b5cf6',
-        }
+            autor: "",
+            color: "#8b5cf6",
+            expiration: ""
+        },
+        // mode: "onChange",
     });
+
     const dispatch = useAppDispatch();
     const [save, setSave] = useState(false);
+
     const onSubmit = () => {
-        localStorage.setItem('form', JSON.stringify(getValues()));
-        dispatch(setConfiguration(getValues()));
+        console.log('submit');
+
+        if (errors.name || errors.description || errors.image || errors.cantidad || errors.autor || errors.color || errors.expiration) {
+            toast.error('Todos los campos son requeridos');
+            return;
+        }
+
+        setState(2);
     }
+
+    const saveLocalStorage = () => {
+        console.log("se cambio");
+        console.log(getValues());
+        localStorage.setItem("form", JSON.stringify(getValues()));
+        dispatch(setConfiguration(getValues()));
+        // dispatch(setErrorMessage(errors));
+    };
+
     const loadForm = () => {
-        const form = localStorage.getItem('form');
+        const form = localStorage.getItem("form");
         if (form) {
             const formData = JSON.parse(form);
-            setValue('name', formData.name);
-            setValue('description', formData.description);
-            setValue('image', formData.image);
-            setValue('cantidad', formData.cantidad);
-            setValue('autor', formData.autor);
-            setValue('color', formData.color);
+            setValue("name", formData.name);
+            setValue("description", formData.description);
+            setValue("image", formData.image);
+            setValue("cantidad", formData.cantidad);
+            setValue("autor", formData.autor);
+            setValue("color", formData.color);
+            setValue("expiration", formData.expiration);
+            console.log(formData);
             dispatch(setConfiguration(formData));
             setSave(true);
         }
-    }
+    };
+
+    console.log(errors);
+    console.log(isValid);
+
+    // Watch all form values and save to localStorage on change
+
+    // useEffect(() => {
+    //     console.log("se cambio");
+    //     saveLocalStorage();
+    // }, [watch]);
 
     useEffect(() => {
         loadForm();
-    }, [])
+    }, []);
 
     return (
-        <div>
-            <h1 className='text-center font-semibold text-lg'>Configuración</h1>
+        <div className="flex flex-col w-full max-w-xl">
+            <h1 className="text-center font-semibold text-lg">Configuración</h1>
             <form
-                autoComplete='off'
+                autoComplete="off"
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col w-full max-w-[500px]">
+                className="flex flex-col w-full "
+            >
                 <label htmlFor="cantidad">Nombre del Top</label>
-                <input type="text"
-                    autoComplete='off'
+                <input
+                    type="text"
+                    autoComplete="off"
                     {...register("name", { required: true })}
-                    placeholder='Cantidad' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
-                {
-                    errors.name && <p className='text-red-500'>Este campo es requerido</p>
-                }
+                    placeholder="nombre del top"
+                    onBlur={saveLocalStorage}
+                    className="w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all"
+                />
+                {errors.name && <p className="text-red-500">Este campo es requerido</p>}
                 <label htmlFor="cantidad">Descripción del Top</label>
-                <input type="text"
-                    autoComplete='off'
+                <input
+                    type="text"
+                    autoComplete="off"
                     {...register("description", { required: true })}
-                    placeholder='Descripción' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
-                {
-                    errors.description && <p className='text-red-500'>
-                        Este campo es requerido
-                    </p>
-                }
+                    placeholder="Descripción"
+                    className="w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all"
+                    onBlur={saveLocalStorage}
+                />
+                {errors.description && (
+                    <p className="text-red-500">Este campo es requerido</p>
+                )}
                 <label htmlFor="cantidad">Cantidad</label>
-                <input type="number"
-                    autoComplete='off'
-                    {...register("cantidad", { required: true })}
-                    placeholder='Cantidad' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
-                {
-                    errors.cantidad && <p className='text-red-500'>Este campo es requerido
+                <input
+                    type="number"
+                    autoComplete="off"
+                    {...register("cantidad", {
+                        min: { value: 2, message: "La cantidad debe ser mayor a 1" },
+                        required: "Este campo es requerido"
+                    })}
+                    placeholder="Cantidad"
+                    className="w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all"
+                    onBlur={saveLocalStorage}
+                />
+                {errors.cantidad && (
+                    <p className="text-red-500">
+                        {
+                            errors.cantidad.message
+                        }
                     </p>
-                }
+                )}
                 <label htmlFor="autor">Autor</label>
-                <input type="text"
-                    autoComplete='off'
+                <input
+                    type="text"
+                    autoComplete="off"
                     {...register("autor", { required: true })}
-                    placeholder='Autor' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
-                {
-                    errors.autor && <p className='text-red-500'>Este campo es requerido
-                    </p>
-                }
+                    placeholder="Autor"
+                    className="w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all"
+                    onBlur={saveLocalStorage}
+                />
+                {errors.autor && (
+                    <p className="text-red-500">Este campo es requerido</p>
+                )}
                 <label htmlFor="color">Color(opcional)</label>
-                <input type="color"
-                    autoComplete='off'
+                <input
+                    type="color"
+                    autoComplete="off"
                     {...register("color", { required: true })}
-                    placeholder='Cantidad' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
-                {
-                    errors.color && <p className='text-red-500'>Este campo es requerido
-                    </p>
-                }
-                <label htmlFor="image">Imagen</label>
-                <input type="text"
-                    autoComplete='off'
-                    {...register("image", { required: true })}
-                    placeholder='Ingrese imagen' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
-                {
-                    errors.image && <p className='text-red-500'>Este campo es requerido
-                    </p>
-                }
+                    placeholder="Cantidad"
+                    className="w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all"
+                    onBlur={saveLocalStorage}
+                />
+                {errors.color && (
+                    <p className="text-red-500">Este campo es requerido</p>
+                )}
+
+                <label htmlFor="color">Fecha de Expiración</label>
+                <input
+                    type="date"
+                    autoComplete="off"
+                    {...register("expiration", { required: true })}
+                    placeholder="20-10-2025"
+                    className="w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all"
+                    onBlur={saveLocalStorage}
+                />
+                {errors.expiration && (
+                    <p className="text-red-500">Este campo es requerido</p>
+                )}
+
+                <label htmlFor="image">Imagen(opcional)</label>
+                <input
+                    type="text"
+                    autoComplete="off"
+                    {...register("image")}
+                    placeholder="Ingrese imagen"
+                    className="w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all"
+                    onBlur={saveLocalStorage}
+                />
+                {errors.image && (
+                    <p className="text-red-500">Este campo es requerido</p>
+                )}
                 <div className="flex justify-center pb-4">
-                    <img src={watch('image') ? watch('image') : 'https://www.unfe.org/wp-content/uploads/2019/04/SM-placeholder.png'} alt="imagen de la votación" className='w-28 h-28 object-cover' />
-                </div>
-                <button className='btn h-10 gap-2'>
                     {
-                        save ? <>
+                        watch("image") &&
+                        <img
+                            src={
+                                watch("image")
+                                    ? watch("image")
+                                    : "https://www.unfe.org/wp-content/uploads/2019/04/SM-placeholder.png"
+                            }
+                            alt="imagen de la votación"
+                            className="w-28 h-28 object-cover"
+                        />
+                    }
+                </div>
+                {/* <button className="btn h-10 gap-2">
+                    {save ? (
+                        <>
                             Actualizar
                             <i className="fas fa-sync-alt"></i>
-                        </> :
-                            <>
-                                Guardar Cambios
-                                <i className="fas fa-save"></i>
-                            </>
-                    }
+                        </>
+                    ) : (
+                        <>
+                            Guardar Cambios
+                            <i className="fas fa-save"></i>
+                        </>
+                    )}
+                </button> */}
+                <button className="btn h-10 gap-2">
+                    Siguiente Paso
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
                 </button>
             </form>
         </div>
-    )
-}
+    );
+};

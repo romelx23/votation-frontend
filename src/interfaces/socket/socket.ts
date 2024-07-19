@@ -1,4 +1,4 @@
-import { Votation, VotationResponse, Votations, GetVotations } from "../";
+import { Votation, VotationResponse, IVotations, ResGetVotations } from "../";
 
 export interface ServerToClientEvents {
   noArg: () => void;
@@ -7,7 +7,7 @@ export interface ServerToClientEvents {
   // "list-scores": (scores: ScoreResponse) => void;
   // "list-users": (users: UsersResponse) => void;
   // "mensaje-privado": (mensaje: MessagePrivateResponse) => void;
-  "get-votations": (votations: GetVotations) => void;
+  "get-votations": (votations: ResGetVotations) => void;
   "get-votation": (votation: VotationResponse) => void;
 }
 

@@ -1,18 +1,23 @@
+type typeForm = "anime" | "general";
+
 export interface Votation {
   title: string;
   description: string;
   color: string;
   creator: string;
   image: string;
+  expiration: string;
+  type_form: typeForm;
   items: Item[];
 }
 
 export interface Item {
   name: string;
   image: string;
+  mal_id?: number;
 }
 
-export interface Votations {
+export interface IVotations {
   uid: string;
   title: string;
   description: string;
@@ -28,15 +33,20 @@ export interface VotationResponse {
     image: string;
     color: string;
     creator: string;
-    date: string;
+    status: boolean;
+    // date: string;
+    expiration: string;
+    type_form: typeForm;
+    createdAt: string;
+    updatedAt: string;
     uid: string;
   };
   items: ItemsResponse[];
 }
 
-export interface GetVotations {
+export interface ResGetVotations {
   total: number;
-  votations: Votations[];
+  votations: IVotations[];
 }
 
 export interface ItemsResponse {
@@ -45,9 +55,16 @@ export interface ItemsResponse {
   votes: number;
   uid: string;
   votation: string;
+  mal_id: number;
 }
 
 export interface GetVotation {
   items: ItemsResponse[];
-  votations: Votations;
+  votations: IVotations;
+}
+
+export interface ISelectedAnime {
+  title: string;
+  image: string;
+  mal_id: number;
 }

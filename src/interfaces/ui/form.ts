@@ -8,4 +8,5 @@ export interface AddForm {
   cantidad: number;
   autor: string;
   color: string;
+  expiration: string;
 }

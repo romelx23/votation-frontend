@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Votation, VotationResponse, Votations } from "../../../interfaces";
+import { Votation, VotationResponse, IVotations } from "../../../interfaces";
 
 interface InitialState {
-  votations: Votations[];
+  votations: IVotations[];
   votation: VotationResponse;
   alreadyVoted: string[];
 }
@@ -17,7 +17,7 @@ export const votationSlice = createSlice({
   name: "votations",
   initialState,
   reducers: {
-    setVote: (state, action: PayloadAction<Votations[]>) => {
+    setVote: (state, action: PayloadAction<IVotations[]>) => {
       console.log("set vote", action.payload);
       state.votations = action.payload;
     },

@@ -1,9 +1,9 @@
 import { createContext } from 'react';
-import { Votation, Votations } from '../../interfaces';
+import { Votation, IVotations } from '../../interfaces';
 
 interface ContextProps {
-    votations: Votations[];
-    setVotation: (votation: Votations[]) => void;
+    votations: IVotations[];
+    setVotation: (votation: IVotations[]) => void;
 }
 
 export const VoteContext = createContext({} as ContextProps)

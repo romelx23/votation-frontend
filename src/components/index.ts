@@ -1,6 +1,6 @@
 export * from "./ui/Navbar";
 export * from "./layouts/VotationLayout";
-export * from "./votation/Votations";
+export * from "./votation/VotationsSearchPage";
 export * from "./votation/SelectedAnime";
 export * from "./votation/SelectedPokemon";
 export * from "./votation/FormConfiguration";

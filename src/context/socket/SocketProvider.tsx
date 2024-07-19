@@ -1,6 +1,6 @@
 import { FC, useContext, useEffect, useReducer } from "react";
 import { useAppDispatch, useAppSelector, useSocket, useVotation } from "../../hooks";
-import { GetVotations, Votation, VotationResponse, Votations } from "../../interfaces";
+import { ResGetVotations, Votation, VotationResponse, IVotations } from "../../interfaces";
 import { setVotation, setVote } from "../../store/slices";
 import { SocketContext, SocketReducer, VoteContext } from "../index";
 // import.meta.env.BASE_URL;
@@ -41,14 +41,14 @@ export const SocketProvider: FC<Props> = ({ children }) => {
     console.log("increment-vote", idVotes);
     socket.emit("increment-votes", { idVotes, idVotation });
   };
-  useEffect(() => {
-    // escuchar los eventos
-    socket.on("get-votations", (votations: GetVotations) => {
-      console.log("get-votations", votations);
-      // setVotation(votations.votations);
-      dispatchVotation(setVote(votations.votations));
-    });
-  }, [socket]);
+  // useEffect(() => {
+  //   // escuchar los eventos
+  //   socket.on("get-votations", (votations: GetVotations) => {
+  //     console.log("get-votations", votations);
+  //     // setVotation(votations.votations);
+  //     dispatchVotation(setVote(votations.votations));
+  //   });
+  // }, [socket]);
 
   useEffect(() => {
     console.log(votacion.votation?.uid);

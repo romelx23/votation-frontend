@@ -5,8 +5,8 @@ export const useLocalSotarage = () => {
     const handleStorage = () => {
         const form = localStorage.getItem('form');
         if (form) {
-            const { name, description, cantidad, color, autor, image }: Configuration = JSON.parse(form);
-            dispatch(setConfiguration({ name, description, cantidad, color, autor, image }));
+            const { name, description, cantidad, color, autor, image, expiration }: Configuration = JSON.parse(form);
+            dispatch(setConfiguration({ name, description, cantidad, color, autor, image, expiration }));
         }
     }
 

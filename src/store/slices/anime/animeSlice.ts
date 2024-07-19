@@ -1,10 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Anime } from "../../../interfaces";
+import { AddForm, Anime, ISelectedAnime } from "../../../interfaces";
+import { FieldErrors } from "react-hook-form";
 
 export interface AnimeState {
-  animeList: Anime[];
+  // animeList: Anime[];
+  animeList: ISelectedAnime[];
   configuration: Configuration;
   show: boolean;
+  errorMessage: FieldErrors<AddForm>;
+  isConfettiActive: boolean;
 }
 
 export interface Configuration {
@@ -14,6 +18,7 @@ export interface Configuration {
   cantidad: number;
   color: string;
   autor: string;
+  expiration: string;
 }
 
 const initialState: AnimeState = {
@@ -25,16 +30,28 @@ const initialState: AnimeState = {
     cantidad: 0,
     color: "",
     autor: "",
+    expiration: "",
   },
   show: false,
+  errorMessage: {},
+  isConfettiActive: false,
 };
 
 export const animeSlice = createSlice({
   name: "anime",
   initialState,
   reducers: {
-    setAnimeList: (state, action: PayloadAction<Anime>) => {
+    setAnimeList: (state, action: PayloadAction<ISelectedAnime>) => {
       state.animeList = [...state.animeList, action.payload];
+    },
+    setAnimeListCollection: (
+      state,
+      action: PayloadAction<ISelectedAnime[]>
+    ) => {
+      state.animeList = action.payload;
+    },
+    setErrorMessage: (state, action: PayloadAction<FieldErrors>) => {
+      state.errorMessage = action.payload;
     },
     setConfiguration: (state, action: PayloadAction<Configuration>) => {
       state.configuration = action.payload;
@@ -50,15 +67,21 @@ export const animeSlice = createSlice({
     setShow: (state, action: PayloadAction<boolean>) => {
       state.show = action.payload;
     },
+    setConfettiActive: (state, action: PayloadAction<boolean>) => {
+      state.isConfettiActive = action.payload;
+    },
   },
 });
 
 export const {
   setAnimeList,
+  setErrorMessage,
+  setAnimeListCollection,
   setConfiguration,
   deleteAnime,
   clearAnimeList,
   setShow,
+  setConfettiActive,
 } = animeSlice.actions;
 
 export default animeSlice.reducer;

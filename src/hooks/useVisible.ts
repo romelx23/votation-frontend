@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 
-export const useVisible = (initialCount:number=60,interval:number = 1000) => {
-    const [isVisible, setIsVisible] = useState<boolean>(false);
-    const [counter, setCounter] = useState<number>(initialCount);
+export const useVisible = (
+  initialCount: number = 60,
+  interval: number = 1000
+) => {
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [counter, setCounter] = useState<number>(initialCount);
 
   // Función para mostrar/ocultar el elemento de información
   const toggleInfo = () => {
@@ -30,12 +33,11 @@ export const useVisible = (initialCount:number=60,interval:number = 1000) => {
       clearTimeout(timer);
     };
   }, [interval, counter]);
-  
-    return {
-        isVisible,
-        counter,
-        toggleInfo,
-        resetCounter
-    };
 
-}
+  return {
+    isVisible,
+    counter,
+    toggleInfo,
+    resetCounter,
+  };
+};

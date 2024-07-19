@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { VotationLayout } from '../../components'
 import { useVotation } from '../../hooks';
+import { Votation } from '../../interfaces';
 
 type Inputs = {
     name: string;
@@ -12,6 +13,7 @@ type Inputs = {
     cantidad: number;
     autor: string;
     items: Items[];
+    expiration: string;
 };
 
 interface Items {
@@ -36,18 +38,20 @@ export const CreateVotation = () => {
             items: [{ name: '', image: '' }],
         }
     });
-    const [save, setSave] = useState(false);
+    // const [save, setSave] = useState(false);
     const [items, setItems] = useState<Items[]>([{ name: '', image: '' }]);
 
     const onSubmit: SubmitHandler<Inputs> = (data) => {
         console.log(data);
         // setSave(true);
-        const votation = {
+        const votation: Votation = {
             title: data.name,
             description: data.description,
             image: data.image,
             color: data.color,
             creator: data.autor,
+            expiration: data.expiration,
+            type_form: 'general',
             items: data.items
         }
         handleCreateVotation(votation);
@@ -92,14 +96,14 @@ export const CreateVotation = () => {
                 <h1 className='text-lg font-semibold'>Cree su votación</h1>
                 <p className='text-center font-semibold'>{step}</p>
                 <div className="w-full h-5 border-2 border-white rounded-xl max-w-[500px]">
-                    <div className={`h-full transition-all delay-100 bg-blue-500 rounded-xl ${widthProgress}`}></div>
+                    <div className={`h-full transition-all delay-100 bg-blue-500 rounded-xl ${ widthProgress }`}></div>
                 </div>
                 <form
                     autoComplete='off'
                     onSubmit={handleSubmit(onSubmit)}
                     className="flex flex-col w-full max-w-[500px] px-4 md:px-0 mb-12 md:mb-0">
                     {
-                        <div className={`flex flex-col ${state === 'add-data' ? 'block' : 'hidden'}`}>
+                        <div className={`flex flex-col ${ state === 'add-data' ? 'block' : 'hidden' }`}>
 
                             <p className='font-semibold text-left py-2'>Datos de la votación:</p>
                             <label htmlFor="cantidad">Nombre del Top</label>
@@ -154,10 +158,19 @@ export const CreateVotation = () => {
                             {
                                 errors.color && <p className='text-red-500'>Este campo es requerido</p>
                             }
+                            <label htmlFor="expiration">Fecha de Expiración</label>
+                            <input
+                                type="date"
+                                autoComplete='off'
+                                {...register("expiration", { required: true })}
+                                placeholder='Ingrese imagen' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
+                            {
+                                errors.expiration && <p className='text-red-500'>Este campo es requerido</p>
+                            }
                             <label htmlFor="image">Imagen</label>
                             <input type="text"
                                 autoComplete='off'
-                                {...register("image", { required: true })}
+                                {...register("image")}
                                 placeholder='Ingrese imagen' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
                             {
                                 errors.image && <p className='text-red-500'>Este campo es requerido</p>
@@ -172,7 +185,7 @@ export const CreateVotation = () => {
                         </div>
                     }
                     {
-                        <div className={`${state === 'add-items' ? 'block' : 'hidden'}`}>
+                        <div className={`${ state === 'add-items' ? 'block' : 'hidden' }`}>
                             <div className="flex">
                                 <button
                                     type='button'
@@ -216,7 +229,7 @@ export const CreateVotation = () => {
                                             </div>
                                             <input type="text"
                                                 autoComplete='off'
-                                                {...register(`items.${index}.name`, { required: true })}
+                                                {...register(`items.${ index }.name`, { required: true })}
                                                 placeholder='Nombre' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
                                             {
                                                 errors.items && <p className='text-red-500'>Este campo es requerido</p>
@@ -224,13 +237,13 @@ export const CreateVotation = () => {
                                             <label htmlFor="image">Imagen</label>
                                             <input type="text"
                                                 autoComplete='off'
-                                                {...register(`items.${index}.image`, { required: true })}
+                                                {...register(`items.${ index }.image`, { required: true })}
                                                 placeholder='Ingrese imagen' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
                                             {
                                                 errors.items && <p className='text-red-500'>Este campo es requerido</p>
                                             }
                                             <div className="flex justify-center pb-4">
-                                                <img src={watch(`items.${index}.image`) ? watch(`items.${index}.image`) : 'https://www.unfe.org/wp-content/uploads/2019/04/SM-placeholder.png'} alt="imagen de la votación" className='w-28 h-28 object-cover' />
+                                                <img src={watch(`items.${ index }.image`) ? watch(`items.${ index }.image`) : 'https://www.unfe.org/wp-content/uploads/2019/04/SM-placeholder.png'} alt="imagen de la votación" className='w-28 h-28 object-cover' />
                                             </div>
                                         </div>
                                     ))
@@ -245,7 +258,7 @@ export const CreateVotation = () => {
                         </div>
                     }
                     {
-                        <div className={`flex flex-col items-start my-2 py-2 ${state === "success" ? 'block' : 'hidden'}`}>
+                        <div className={`flex flex-col items-start my-2 py-2 ${ state === "success" ? 'block' : 'hidden' }`}>
                             <div className="w-full h-60 flex flex-col justify-center items-center mb-4">
                                 <img src="https://media.discordapp.net/attachments/839620709517230081/1020746298888048690/animation_500_l866e2ew.gif" alt="conffeti" className='absolute pointer-events-none' />
                                 <p className='font-semibold text-lg text-left py-2'>Votación creada con éxito</p>
