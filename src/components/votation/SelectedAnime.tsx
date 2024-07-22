@@ -49,7 +49,7 @@ export const SelectedAnime = () => {
 
     return (
         <VotationLayout>
-            <div className="flex flex-col items-center pt-4">
+            <div className="flex flex-col items-center pt-4 px-2 md:px-0">
                 <h1 className='text-lg font-semibold'>Añade Animes para el Top 👑</h1>
 
 

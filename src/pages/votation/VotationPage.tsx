@@ -5,6 +5,8 @@ import { useAppSelector, useVotation, useVisible, useAppDispatch } from '../../h
 import { StadisticsTopTen } from '../../components/votation/StadisticsTopTen';
 import { toast } from 'sonner';
 import { setAnimeList, setAnimeListCollection, setConfiguration } from '../../store/slices';
+import { format, isBefore } from 'date-fns';
+import { es } from 'date-fns/locale/es';
 
 export const VotationPage = () => {
     const { id } = useParams();
@@ -50,7 +52,8 @@ export const VotationPage = () => {
     const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (votation?.expiration < new Date().toISOString()) {
+        // if (votation?.expiration < new Date().toISOString()) {
+        if (isBefore(expirationDate, new Date())) {
             toast.error('La votación ha expirado');
             return;
         }
@@ -101,6 +104,9 @@ export const VotationPage = () => {
         if (id) getVotation(id);
     }, [])
     // En esta página se muestra la lista de animes disponibles
+
+    // console.log(isBefore(new Date(), expirationDate));
+    // console.log(isBefore(expirationDate, new Date()));
     return (
         <VotationLayout>
             <div className="flex flex-col items-center my-2">
@@ -151,10 +157,17 @@ export const VotationPage = () => {
                                 <h1 className='text-2xl text-center pt-2 capitalize'>{votation.title}</h1>
                                 <p>{votation.description}</p>
                                 <p className='text-base text-gray-500'>Creado por: {votation.creator}</p>
-                                <p className='text-base text-gray-500'>Fecha de creación: {currentDate.toLocaleDateString()}</p>
-                                <p className='text-base text-gray-500'>Fecha de Expiración: {expirationDate.toLocaleDateString()}</p>
+                                <p className='text-base text-gray-500'>Fecha de creación: {
+                                    format(currentDate, 'dd/MM/yyyy HH:mm', {
+                                        locale: es
+                                    })
+                                }</p>
+                                <p className='text-base text-gray-500'>Fecha de Expiración: {
+                                    format(expirationDate, 'dd/MM/yyyy HH:mm')
+                                }
+                                </p>
                                 {
-                                    votation?.expiration < new Date().toISOString() && <p className='bg-red-600 text-white text-center font-bold leading-4 absolute -rotate-[50deg] -left-4 top-10 px-4 py-1'>
+                                    isBefore(expirationDate, new Date()) && <p className='bg-red-600 text-white text-center font-bold leading-4 absolute -rotate-[50deg] -left-4 top-10 px-4 py-1'>
                                         lavotación <br />
                                         ha terminado
                                     </p>
