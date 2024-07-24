@@ -162,7 +162,7 @@ export const StadisticsTopTen = () => {
 
     return (
         <div className='flex flex-col items-center w-full px-8'>
-            <h1 className='text-2xl text-center font-semibold'>Estadísticas</h1>
+            <h1 className='text-2xl text-center font-semibold print:text-black'>Estadísticas</h1>
             <div className="flex w-full max-w-5xl flex-col md:flex-row flex-wrap">
                 <div className="w-full max-w-5xl">
                     <Bar
@@ -179,10 +179,10 @@ export const StadisticsTopTen = () => {
                                 {/* <img src={item.image} alt={item.name} className='w-14 h-14 rounded-full object-cover' /> */}
                                 <img src={item.image} alt={item.name} className='w-32 h-48 rounded-sm object-cover' />
                                 <p
-                                    className='overflow-hidden overflow-ellipsis w-28 flex-grow-[1]'
+                                    className='overflow-hidden overflow-ellipsis w-28 flex-grow-[1] print:text-black'
                                 >{item.name.slice(0, 25)}</p>
 
-                                <p className='font-semibold text-2xl flex-grow-[2] flex items-end'>{item.votes}</p>
+                                <p className='font-semibold text-2xl flex-grow-[2] flex items-end print:text-black'>{item.votes}</p>
 
                             </div>
                         ))

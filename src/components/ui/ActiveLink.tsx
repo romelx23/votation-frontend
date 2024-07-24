@@ -4,9 +4,11 @@ import { NavLink, useLocation } from 'react-router-dom';
 interface ActiveLinkProps {
     route: string;
     routes: string[];
+    children?: React.ReactNode;
+    className?: string;
 }
 
-export const ActiveLink: React.FC<ActiveLinkProps> = ({ route, routes }) => {
+export const ActiveLink: React.FC<ActiveLinkProps> = ({ route, routes, children, className }) => {
 
     console.log(routes);
     console.log(route);
@@ -20,9 +22,9 @@ export const ActiveLink: React.FC<ActiveLinkProps> = ({ route, routes }) => {
         // if routes includes route, add active class
         <NavLink
             to={route}
-            className={`text-2xl font-semibold mr-4 text-white hover:text-indigo-600
+            className={`${ className } 
     ${ routes.includes(location.split('/')[1]) ? 'active' : '' }`}>
-            Votaciones
+            {children}
         </NavLink>
     )
 }

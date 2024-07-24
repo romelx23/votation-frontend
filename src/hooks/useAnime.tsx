@@ -10,7 +10,8 @@ export const useAnime = () => {
     const getAnime = async (query: string) => {
         try {
             // const { data } = await animeApi.get<AnimeResponse>(`?q=${query}`)
-            const data = await fetch(`https://api.jikan.moe/v4/anime?q=${query}`, {
+            setLoading(true)
+            const data = await fetch(`https://api.jikan.moe/v4/anime?q=${ query }`, {
                 method: 'GET',
             })
             const resp: AnimeResponse = await data.json()

@@ -52,9 +52,9 @@ export const AddAnimePage: React.FC<AddAnimePageProps> = ({ anime, loading, getA
                         // value={values.search}
                         // onChange={handleChange}
                         placeholder='Buscar Anime' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
-                    {
+                    {/* {
                         loading && <p>Loading...</p>
-                    }
+                    } */}
                     <button className='btn h-10'
                         title='Buscar Anime'
                     >

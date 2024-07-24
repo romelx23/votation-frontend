@@ -4,9 +4,13 @@ import { Stadistics, VotationLayout } from '../../components'
 import { useAppSelector, useVotation, useVisible, useAppDispatch } from '../../hooks';
 import { StadisticsTopTen } from '../../components/votation/StadisticsTopTen';
 import { toast } from 'sonner';
-import { setAnimeList, setAnimeListCollection, setConfiguration } from '../../store/slices';
-import { format, isBefore } from 'date-fns';
+import { setAnimeList, setAnimeListCollection, setConfettiActive, setConfiguration } from '../../store/slices';
+import { differenceInDays, format, isBefore } from 'date-fns';
 import { es } from 'date-fns/locale/es';
+import { ModalWrapper } from '../../components/ui/ModalWrapper';
+import Confetti from 'react-confetti';
+import { useWindowSize } from '../../hooks/useWindowSize';
+import { CopyPhoto } from '../../components/ui/CopyPhoto';
 
 export const VotationPage = () => {
     const { id } = useParams();
@@ -15,11 +19,14 @@ export const VotationPage = () => {
 
     const { getVotation, handleVotation } = useVotation();
     const dispatch = useAppDispatch();
+    const { width, height } = useWindowSize();
 
     const [show, setShow] = useState(true);
     const [showTen, setShowTen] = useState(true);
+    const [showListAnime, setShowListAnime] = useState(false);
 
     const { votation: data, alreadyVoted } = useAppSelector(state => state.votation);
+    const { isConfettiActive } = useAppSelector(state => state.anime);
 
     const { items, votation } = data;
     const isVoted = alreadyVoted.includes(votation?.uid);
@@ -27,7 +34,7 @@ export const VotationPage = () => {
 
     const currentDate = new Date(votation?.createdAt);
     const expirationDate = new Date(votation?.expiration);
-    const [slected, setSlected] = useState<string[]>([]);
+    const [selected, setSelected] = useState<string[]>([]);
     const [toggleInfo, setToggleInfo] = useState(false);
     // const { toggleInfo, counter, isVisible } = useVisible(40, 500);
 
@@ -36,17 +43,17 @@ export const VotationPage = () => {
 
         // no mas de 5 seleccionados
 
-        if (slected.length >= 5) {
+        if (selected.length >= 5) {
             e.preventDefault();
             toast.error('Solo puedes seleccionar hasta 5 animes');
             return;
         }
 
         if (checked) {
-            setSlected([...slected, value]);
+            setSelected([...selected, value]);
         }
         else {
-            setSlected(slected.filter(item => item !== value));
+            setSelected(selected.filter(item => item !== value));
         }
     }
     const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
@@ -58,7 +65,7 @@ export const VotationPage = () => {
             return;
         }
 
-        if (slected.length === 0) {
+        if (selected.length === 0) {
             toast.error('No has seleccionado ningún anime');
             return;
         }
@@ -67,7 +74,10 @@ export const VotationPage = () => {
             return;
         }
 
-        handleVotation(slected, votation.uid);
+        handleVotation(selected, votation.uid);
+        setSelected([]);
+        dispatch(setConfettiActive(true));
+        toast.success('Votación realizada con éxito');
     }
 
     const handleCopyTemplate = () => {
@@ -91,6 +101,10 @@ export const VotationPage = () => {
             expiration: votation.expiration,
         }
 
+        console.log(formData);
+
+        localStorage.setItem('form', JSON.stringify(formData));
+
         // setear la configuración del formulario
         dispatch(setConfiguration(formData));
         // setear los animes
@@ -107,6 +121,7 @@ export const VotationPage = () => {
 
     // console.log(isBefore(new Date(), expirationDate));
     // console.log(isBefore(expirationDate, new Date()));
+    console.log(selected);
     return (
         <VotationLayout>
             <div className="flex flex-col items-center my-2">
@@ -156,8 +171,8 @@ export const VotationPage = () => {
                                 <div className='h-3 rounded-xl w-full opacity-90' style={{ background: `${ votation.color }` }}></div>
                                 <h1 className='text-2xl text-center pt-2 capitalize'>{votation.title}</h1>
                                 <p>{votation.description}</p>
-                                <p className='text-base text-gray-500'>Creado por: {votation.creator}</p>
-                                <p className='text-base text-gray-500'>Fecha de creación: {
+                                <p className='text-base text-gray-400'>Creado por: {votation.creator}</p>
+                                {/* <p className='text-base text-gray-500'>Fecha de creación: {
                                     format(currentDate, 'dd/MM/yyyy HH:mm', {
                                         locale: es
                                     })
@@ -165,6 +180,28 @@ export const VotationPage = () => {
                                 <p className='text-base text-gray-500'>Fecha de Expiración: {
                                     format(expirationDate, 'dd/MM/yyyy HH:mm')
                                 }
+                                </p> */}
+                                <p className='text-base text-gray-400 lowercase'>
+                                    {
+                                        format(currentDate, 'dd/MM/yyyy hh:mm a', {
+                                            locale: es
+                                        })
+                                        + " "
+                                    }
+                                    -
+                                    {" " +
+                                        format(expirationDate, 'dd/MM/yyyy hh:mm a')
+                                    }
+                                </p>
+                                <p className='text-sm text-white font-semibold bg-violet-600 px-3 py-1 flex gap-2 my-1 items-center'>
+                                    Faltan
+                                    <span className='text-lg'>
+                                        {
+                                            " " + differenceInDays(expirationDate, new Date()) + " "
+                                        }
+                                    </span>
+                                    días para que termine la votación
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-alert-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
                                 </p>
                                 {
                                     isBefore(expirationDate, new Date()) && <p className='bg-red-600 text-white text-center font-bold leading-4 absolute -rotate-[50deg] -left-4 top-10 px-4 py-1'>
@@ -193,6 +230,16 @@ export const VotationPage = () => {
                                         </button>
                                     )
                                 }
+                                {/* {
+
+                                    <button
+                                        onClick={handleCopyTemplate}
+                                        title='Copiar Foto de la votación'
+                                        className='absolute top-14 right-2 hover:bg-orange-500 py-2 px-2 rounded-full transition-colors'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-photo-scan"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 8h.01" /><path d="M6 13l2.644 -2.644a1.21 1.21 0 0 1 1.712 0l3.644 3.644" /><path d="M13 13l1.644 -1.644a1.21 1.21 0 0 1 1.712 0l1.644 1.644" /><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /></svg>
+                                    </button>
+
+                                } */}
                                 {
                                     toggleInfo && (
                                         <div className={`flex justify-center items-center bg-violet-600 text-white px-2 my-3`}>
@@ -233,18 +280,30 @@ export const VotationPage = () => {
                                             ))
                                         }
                                     </ul>
-                                    <button
-                                        type="submit"
-                                        // disabled={isVoted || slected.length === 0}
-                                        className="btn__vote"
-                                    >
-                                        Votar
-                                    </button>
+                                    <div className="flex justify-center">
+                                        <button
+                                            type="submit"
+                                            disabled={isVoted}
+                                            className="btn__vote"
+                                        >
+                                            Votar
+                                        </button>
+                                    </div>
                                     {
-                                        isVoted && <p className='text-center text-green-500 pt-3'>Ya has votado en esta votación</p>
-                                    }
-                                    {
-                                        slected.length === 0 && isVoted && <p className='text-center text-red-500 pt-3'>No has seleccionado ningún anime</p>
+                                        isVoted && (
+                                            <div className={`flex justify-center items-center bg-gray-700 text-white px-2 mt-3 max-w-xl mx-auto rounded`}>
+                                                <div className="w-full max-w-xl p-2 rounded-lg items-start ">
+
+                                                    {
+                                                        isVoted && <p className=' text-green-500 font-bold'> - Ya has votado en esta votación</p>
+                                                    }
+                                                    {
+                                                        selected.length === 0 && isVoted && alreadyVoted.length === 0 &&
+                                                        <p className=' text-red-500 pt-3 font-bold'>- No has seleccionado ningún anime</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        )
                                     }
                                 </form>
                             </div>
@@ -252,13 +311,60 @@ export const VotationPage = () => {
                         : (
                             showTen ?
                                 // <Stadistics topTen={true} />
-                                <StadisticsTopTen />
+                                <CopyPhoto>
+                                    <StadisticsTopTen />
+                                </CopyPhoto>
                                 :
                                 <Stadistics />
                         )
                 }
             </div>
             <div className="h-20 md:h-10"></div>
+            {
+                selected.length > 0 && (
+                    <button
+                        onClick={() => setShowListAnime(true)}
+                        className='fixed right-2 md:right-4 xl:right-10 top-5 md:top-20 w-32 md:w-40 md:py-2 rounded-md bg-violet-600 text-white py-1 font-semibold text-sm z-50'
+                    >
+                        Ver Animes Seleccionados
+                    </button>
+                )
+            }
+            {
+                showListAnime && (
+                    <ModalWrapper
+                        leftTitle=''
+                        centerTitle='Animes Seleccionados'
+                        // show={showListAnime}
+                        setShow={setShowListAnime}
+                    >
+                        <div className="flex flex-col items-center gap-2 px-3">
+                            <div className="w-full flex flex-col justify-start gap-2 ">
+                                {
+                                    items.filter(item => selected.includes(item.uid)).map((item, i) => (
+                                        <div key={i} className="flex flex-row items-center gap-3">
+                                            <img src={item.image} alt={item.name} className="w-28 h-36 object-cover" />
+                                            <p className='text-center'>{item.name}</p>
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        </div>
+
+                    </ModalWrapper>
+                )
+            }
+            {isConfettiActive && (
+                <div className="fixed top-0">
+                    <Confetti
+                        width={width}
+                        height={height}
+                        recycle={false}
+                        numberOfPieces={300}
+                        onConfettiComplete={() => dispatch(setConfettiActive(false))}
+                    />
+                </div>
+            )}
         </VotationLayout>
     )
 }

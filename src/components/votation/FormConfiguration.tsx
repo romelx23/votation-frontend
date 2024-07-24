@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch } from "../../hooks";
 import { AddForm } from "../../interfaces";
-import { setConfiguration, setErrorMessage } from "../../store/slices";
+import { setAnimeListCollection, setConfiguration, setErrorMessage } from "../../store/slices";
 import { toast } from "sonner";
 
 interface FormConfigurationProps {
@@ -88,6 +88,16 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState }
     return (
         <div className="flex flex-col w-full max-w-xl">
             <h1 className="text-center font-semibold text-lg">Configuración</h1>
+            <button
+                onClick={() => {
+                    reset();
+                    localStorage.removeItem("form");
+                    dispatch(setAnimeListCollection([]));
+                }}
+                title='Copiar Foto de la votación'
+                className='absolute top-20 right-5 bg-blue-600 border-2 border-transparent hover:border-white py-2 px-2 rounded-full transition-colors'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-restore"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3.06 13a9 9 0 1 0 .49 -4.087" /><path d="M3 4.001v5h5" /><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+            </button>
             <form
                 autoComplete="off"
                 onSubmit={handleSubmit(onSubmit)}

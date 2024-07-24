@@ -15,7 +15,10 @@ export const Navbar = () => {
                 <ActiveLink
                     route="/"
                     routes={['/', 'votar']}
-                />
+                    className='text-2xl font-semibold mr-4 text-white hover:text-indigo-600'
+                >
+                    Votaciones
+                </ActiveLink>
                 <NavLink to="/seleccionar-tema" className='text-2xl font-semibold text-white'>Crea tu Votación</NavLink>
             </div>
         </div>
