@@ -130,9 +130,10 @@ export const VotationsSearchPage = () => {
                                     onClick={() => handleVotation(votation.uid)}
                                     key={votation.uid}
                                     className='flex flex-col relative md:h-36 h-32 cursor-pointer w-full sm:w-96 group hover:scale-110 transition-transform'>
-                                    <div className="absolute flex justify-center items-center w-full h-full font-semibold text-white z-50">
-                                        <p className='pr-4'>{i + 1})</p>
-                                        <p>{votation.title}</p>
+                                    <div className="absolute flex flex-col justify-center items-center w-full h-full font-semibold text-white z-50">
+                                        {/* <p className='pr-4'></p> */}
+                                        <p>{i + 1})  {votation.title}</p>
+                                        <p className='text-sm text-gray-400'>{votation.creator}</p>
                                     </div>
                                     <img src={validateImage(votation.image)}
                                         onError={(e) => e.currentTarget.src = 'https://res.cloudinary.com/react-romel/image/upload/v1721428197/vavdepp5t9iptdkrdeu2_hsda3x.webp'}
