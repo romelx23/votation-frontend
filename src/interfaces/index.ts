@@ -3,3 +3,4 @@ export * from "./votation/Pokemon";
 export * from "./votation/votation";
 export * from "./ui/form";
 export * from "./socket/socket";
+export * from "./auth/register.type";

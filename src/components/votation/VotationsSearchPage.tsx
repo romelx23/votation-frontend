@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // import { SocketContext } from '../../context';
 import { useAppDispatch, useAppSelector, useVotation } from '../../hooks';
 import { IVotations } from '../../interfaces';
@@ -126,8 +126,9 @@ export const VotationsSearchPage = () => {
 
                         {
                             votations.map((votation, i) => (
-                                <div
-                                    onClick={() => handleVotation(votation.uid)}
+                                <Link
+                                    to={`/votar/${ votation.uid }`}
+                                    // onClick={() => handleVotation(votation.uid)}
                                     key={votation.uid}
                                     className='flex flex-col relative md:h-36 h-32 cursor-pointer w-full sm:w-96 group hover:scale-110 transition-transform'>
                                     <div className="absolute flex flex-col justify-center items-center w-full h-full font-semibold text-white z-50">
@@ -138,7 +139,7 @@ export const VotationsSearchPage = () => {
                                     <img src={validateImage(votation.image)}
                                         onError={(e) => e.currentTarget.src = 'https://res.cloudinary.com/react-romel/image/upload/v1721428197/vavdepp5t9iptdkrdeu2_hsda3x.webp'}
                                         alt="10-mejores-openings-animes" title='10 mejores openings' className=' w-full h-full opacity-25 object-cover transition duration-300 ease-in-out group-hover:opacity-75' />
-                                </div>
+                                </Link>
                             ))
                         }
                     </div>

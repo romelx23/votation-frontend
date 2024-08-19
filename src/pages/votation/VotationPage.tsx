@@ -98,7 +98,7 @@ export const VotationPage = () => {
             cantidad: items.length,
             autor: votation.creator,
             color: votation.color,
-            expiration: votation.expiration,
+            expiration: format(new Date(votation.expiration), 'yyyy-MM-dd'),
         }
 
         console.log(formData);
@@ -336,7 +336,8 @@ export const VotationPage = () => {
                         leftTitle=''
                         centerTitle='Animes Seleccionados'
                         // show={showListAnime}
-                        setShow={setShowListAnime}
+                        onClose={() => { setShowListAnime(false) }}
+                        isOpen={showListAnime}
                     >
                         <div className="flex flex-col items-center gap-2 px-3">
                             <div className="w-full flex flex-col justify-start gap-2 ">
@@ -362,6 +363,12 @@ export const VotationPage = () => {
                         recycle={false}
                         numberOfPieces={300}
                         onConfettiComplete={() => dispatch(setConfettiActive(false))}
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            zIndex: 1000
+                        }}
                     />
                 </div>
             )}

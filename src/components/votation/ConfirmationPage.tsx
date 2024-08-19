@@ -1,4 +1,7 @@
-import { useAppSelector, useVotation } from "../../hooks";
+import { FC } from "react";
+import { useAppDispatch, useAppSelector, useVotation } from "../../hooks";
+import { ISelectedAnime } from "../../interfaces";
+import { deleteAnime } from "../../store/slices";
 
 // name: "",
 // description: "",
@@ -7,7 +10,11 @@ import { useAppSelector, useVotation } from "../../hooks";
 // color: "",
 // autor: "",
 
-export const ConfirmationPage = () => {
+interface ConfirmationPageProps {
+    id?: string;
+}
+
+export const ConfirmationPage: FC<ConfirmationPageProps> = ({ id }) => {
 
     const {
         animeList,
@@ -20,7 +27,13 @@ export const ConfirmationPage = () => {
             autor,
         },
     } = useAppSelector((state) => state.anime);
-    const { handleSubmmit } = useVotation();
+    const { handleCreateVotationAnime, handleUpdateVotationAnime } = useVotation();
+
+    const dispatch = useAppDispatch();
+    const handleDelete = (ani: ISelectedAnime) => {
+        dispatch(deleteAnime(ani.mal_id));
+    }
+
     return (
         // listame todos los datos del formulario y de los animes escogidos
         <>
@@ -37,7 +50,7 @@ export const ConfirmationPage = () => {
                         <img src={image} alt={name} className="w-20 h-20 object-cover" />
                     </div>
 
-                    <div className="flex flex-col gap-2">
+                    <div className="w-full flex flex-col gap-2">
                         <h1 className="text-lg font-semibold mb-2 border-b">Animes Añadidos</h1>
                         {
                             animeList.length === 0 &&
@@ -45,21 +58,65 @@ export const ConfirmationPage = () => {
                         }
                         {animeList.map((anime, index) => (
                             <div key={index} className="flex gap-2 items-center">
-                                <img
-                                    src={anime?.image}
-                                    alt={anime.title}
-                                    className="w-20 h-20 object-cover"
-                                />
-                                <h1 className="text-lg font-semibold">{anime.title}</h1>
+                                <div className="flex gap-1 flex-1">
+                                    <img
+                                        src={anime?.image}
+                                        alt={anime.title}
+                                        className="w-20 h-20 object-cover"
+                                    />
+                                    <h1 className="text-lg font-semibold">{anime.title}</h1>
+                                </div>
+                                <button
+                                    onClick={() => handleDelete(anime)}
+                                    className="btn gap-0.5"
+                                >
+                                    Eliminar
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="icon icon-tabler icons-tabler-outline icon-tabler-circle-minus"
+                                    >
+                                        <path
+                                            stroke="none"
+                                            d="M0 0h24v24H0z"
+                                            fill="none"
+                                        />
+                                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                        <path d="M9 12l6 0" />
+                                    </svg>
+                                </button>
                             </div>
                         ))}
                     </div>
                 </div>
-                <button
-                    onClick={handleSubmmit}
+                {
+                    id &&
+                    <button
+                        onClick={() => handleUpdateVotationAnime(id)}
+                        className="btn h-10 gap-2 w-full mt-3">
+                        Actualizar Encuesta
+                    </button>
+                }
+                {
+                    !id &&
+                    <button
+                        onClick={handleCreateVotationAnime}
+                        className="btn h-10 gap-2 w-full mt-3">
+                        Publicar Encuesta
+                    </button>
+                }
+                {/* <button
+                    onClick={handleCreateVotationAnime}
                     className="btn h-10 gap-2 w-full mt-3">
                     Publicar Encuesta
-                </button>
+                </button> */}
             </div>
         </>
     );

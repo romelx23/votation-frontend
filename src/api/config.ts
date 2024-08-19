@@ -18,5 +18,20 @@ export const pokeApi = axios.create({
 });
 
 export const votationApi = axios.create({
-  baseURL: `${api_url}/api/votation`,
+  baseURL: `${api_url}/api`,
 });
+
+votationApi.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("x-token"); // Get token from local storage
+    // Check if token exists
+    if (token) {
+      config.headers?.["x-token"] && (config.headers["x-token"] = token); // Add token to headers
+    }
+    return config;
+  },
+  (error) => {
+    // Handle request errors if needed
+    return Promise.reject(error);
+  }
+);

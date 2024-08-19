@@ -15,7 +15,7 @@ export const useVotation = () => {
     const navigate = useNavigate();
 
     // function for anime votation
-    const handleSubmmit = () => {
+    const handleCreateVotationAnime = () => {
 
         // animeList.length < cantidad * 1 || animeList.length === 0
 
@@ -55,20 +55,54 @@ export const useVotation = () => {
         localStorage.removeItem('form');
     }
 
+    const handleUpdateVotationAnime = async (id: string) => {
+        const votation: Votation = {
+            title: configuration.name,
+            description: configuration.description,
+            image: configuration.image,
+            color: configuration.color,
+            creator: configuration.autor,
+            expiration: configuration.expiration,
+            type_form: 'anime',
+            items: animeList.map(anime => ({
+                name: anime.title,
+                image: anime.image,
+                mal_id: anime.mal_id
+            }))
+        }
+
+        try {
+            const { data: votationsData } = await votationApi.put<ResGetVotations>(`/votation/${ id }`, {
+                votation
+            }); // Fetch categories
+            console.log({ votationsData });
+
+            dispatch(clearAnimeList());
+            toast.success('Votación actualizada con éxito');
+
+            dispatch(setConfettiActive(true));
+            localStorage.removeItem('form');
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
     const getVotation = async (id: string) => {
         try {
-            const data = await votationApi.get<VotationResponse>(`/${ id }`);
+            const data = await votationApi.get<VotationResponse>(`/votation/${ id }`);
             const resp = data.data;
             console.log(resp);
             dispatch(setVotation(resp));
+            return resp;
         } catch (error) {
-            navigate('/');
+            // navigate('/');
+            return null;
         }
     }
 
     const getVotations = async (limit: number = 10, skip: number = 0, search: string = '') => {
         try {
-            const data = await votationApi.get<ResGetVotations>(`/?limit=${ limit }&offset=${ skip }&search=${ search }`);
+            const data = await votationApi.get<ResGetVotations>(`/votation/?limit=${ limit }&offset=${ skip }&search=${ search }`);
             const resp = data.data;
             console.log(resp);
             dispatch(setVote(resp.votations));
@@ -92,11 +126,12 @@ export const useVotation = () => {
     }
 
     return {
-        handleSubmmit,
+        handleCreateVotationAnime,
         getVotation,
         getVotations,
         handleVotation,
         handleCreateVotation,
-        setConfettiActive
+        setConfettiActive,
+        handleUpdateVotationAnime
     }
 }

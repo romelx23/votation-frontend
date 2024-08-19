@@ -3,19 +3,22 @@ import { useForm } from 'react-hook-form'
 // import { useAnime } from '../../hooks';
 import { ButtonAnime } from './ButtonAnime';
 import { Anime } from '../../interfaces';
+import { cn } from '../../helpers/cn';
 
 interface AddAnimePageProps {
     anime: Anime[],
     loading: boolean,
     getAnime: (query: string) => void,
-    error: boolean
+    error: boolean,
+    isSticky?: boolean,
+    classNameList?: string
 }
 
 interface IForm {
     search: string
 }
 
-export const AddAnimePage: React.FC<AddAnimePageProps> = ({ anime, loading, getAnime, error }) => {
+export const AddAnimePage: React.FC<AddAnimePageProps> = ({ anime, loading, getAnime, error, isSticky = false, classNameList }) => {
 
     const {
         register,
@@ -38,31 +41,52 @@ export const AddAnimePage: React.FC<AddAnimePageProps> = ({ anime, loading, getA
 
     return (
         <>
-            <div className='w-full max-w-xl'>
-                <form
-                    autoComplete='off'
-                    onSubmit={handleSubmit(handleSearch)}
-                    className="flex w-full items-center  sticky top-[130px] z-10 bg-[#242424]">
-                    <input type="text"
-                        autoComplete='off'
-                        {
-                        ...register('search', { required: true })
-                        }
-                        // name='search'
-                        // value={values.search}
-                        // onChange={handleChange}
-                        placeholder='Buscar Anime' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
-                    {/* {
-                        loading && <p>Loading...</p>
-                    } */}
-                    <button className='btn h-10'
-                        title='Buscar Anime'
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-search"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
-                    </button>
-                </form>
+            <div className='w-full max-w-2xl'>
 
-                <div className='flex flex-col gap-4'>
+                {
+                    isSticky ?
+                        <form
+                            autoComplete='off'
+                            onSubmit={handleSubmit(handleSearch)}
+                            className="flex w-full items-center  sticky top-[130px] z-10 bg-[#242424]">
+                            <input type="text"
+                                autoComplete='off'
+                                {
+                                ...register('search', { required: true })
+                                }
+                                // name='search'
+                                // value={values.search}
+                                // onChange={handleChange}
+                                placeholder='Buscar Anime' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
+                            {/* {
+                            loading && <p>Loading...</p>
+                        } */}
+                            <button className='btn h-10'
+                                title='Buscar Anime'
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-search"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
+                            </button>
+                        </form>
+                        :
+                        <form
+                            autoComplete='off'
+                            onSubmit={handleSubmit(handleSearch)}
+                            className="flex w-full my-2 items-center z-10 bg-[#242424]">
+                            <input type="text"
+                                autoComplete='off'
+                                {
+                                ...register('search', { required: true })
+                                }
+                                placeholder='Buscar Anime' className='w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all' />
+                            <button className='btn h-10'
+                                title='Buscar Anime'
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-search"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
+                            </button>
+                        </form>
+                }
+
+                <div className={cn(`flex flex-col gap-4 h-full overflow-auto ${ classNameList ? classNameList : "" }`)}>
                     {loading ? <h1>Loading...</h1> : anime.map((anime) => {
                         return <div key={anime.mal_id}>
                             <div className='pb-2 flex items-center font-semibold relative max-w-[500px] justify-between'>

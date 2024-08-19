@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAppDispatch } from "../../hooks";
-import { AddForm } from "../../interfaces";
+import { useAppDispatch, useAppSelector, useVotation } from "../../hooks";
+import { AddForm, IVotationState } from "../../interfaces";
 import { setAnimeListCollection, setConfiguration, setErrorMessage } from "../../store/slices";
 import { toast } from "sonner";
+import { format } from "date-fns";
+import { useAuthStore } from "../../store/auth/authStore";
 
 interface FormConfigurationProps {
     setState: React.Dispatch<React.SetStateAction<number>>;
+    isVisible?: boolean;
+    votationData?: IVotationState | null;
 }
 
-export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState }) => {
+export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState, isVisible = false, votationData }) => {
     const {
         getValues,
         setValue,
@@ -27,13 +31,19 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState }
             cantidad: 10,
             autor: "",
             color: "#8b5cf6",
-            expiration: ""
+            expiration: "",
+            visibility: true
         },
         // mode: "onChange",
     });
 
     const dispatch = useAppDispatch();
     const [save, setSave] = useState(false);
+    const { user } = useAuthStore();
+
+    const { votation: data } = useAppSelector(state => state.votation);
+
+    const { items, votation } = data;
 
     const onSubmit = () => {
         console.log('submit');
@@ -64,7 +74,7 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState }
             setValue("cantidad", formData.cantidad);
             setValue("autor", formData.autor);
             setValue("color", formData.color);
-            setValue("expiration", formData.expiration);
+            setValue("expiration", format(new Date(formData.expiration), 'yyyy-MM-dd'));
             console.log(formData);
             dispatch(setConfiguration(formData));
             setSave(true);
@@ -74,16 +84,46 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState }
     console.log(errors);
     console.log(isValid);
 
-    // Watch all form values and save to localStorage on change
 
-    // useEffect(() => {
-    //     console.log("se cambio");
-    //     saveLocalStorage();
-    // }, [watch]);
+    const setVotationData = () => {
+        console.log(votation);
+        setValue("name", votation?.title);
+        setValue("description", votation?.description);
+        setValue("image", votation?.image);
+        setValue("cantidad", items.length);
+        setValue("autor", votation?.creator);
+        setValue("color", votation?.color);
+        setValue("expiration", format(new Date(votation?.expiration), 'yyyy-MM-dd'));
+        setValue("visibility", votation?.visibility);
+    }
+
+    // const setVotationDataProps = () => {
+    //     console.log(votationData);
+    //     if (votationData) {
+    //         setValue("name", votationData?.name);
+    //         setValue("description", votationData?.description);
+    //         setValue("image", votationData?.image);
+    //         setValue("cantidad", votationData.cantidad);
+    //         setValue("autor", votationData?.autor);
+    //         setValue("color", votationData?.color);
+    //         setValue("expiration", votationData?.expiration);
+    //         setValue("visibility", true);
+    //     }
+    // }
 
     useEffect(() => {
-        loadForm();
-    }, []);
+        // if (id===undefined) {
+        //     console.log("se monto");
+        //     loadForm();
+        // }
+        console.log(votation);
+        if (votation) {
+            setVotationData();
+        }
+        // if (votationData) {
+        //     setVotationDataProps();
+        // }
+    }, [votation]);
 
     return (
         <div className="flex flex-col w-full max-w-xl">
@@ -94,7 +134,7 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState }
                     localStorage.removeItem("form");
                     dispatch(setAnimeListCollection([]));
                 }}
-                title='Copiar Foto de la votación'
+                title='Limpiar Formulario'
                 className='absolute top-20 right-5 bg-blue-600 border-2 border-transparent hover:border-white py-2 px-2 rounded-full transition-colors'>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-restore"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3.06 13a9 9 0 1 0 .49 -4.087" /><path d="M3 4.001v5h5" /><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
             </button>
@@ -181,6 +221,24 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState }
                 {errors.expiration && (
                     <p className="text-red-500">Este campo es requerido</p>
                 )}
+                {
+                    user && isVisible &&
+                    <>
+                        <label htmlFor="visibility">Visibilidad</label>
+                        <select
+                            {...register("visibility", { required: true })}
+                            className="w-full py-2 px-3 my-4 shadow-lg focus:shadow-indigo-600 transition-all"
+                            onBlur={saveLocalStorage}
+                            defaultValue="true"
+                        >
+                            <option value="true">Público</option>
+                            <option value="false">Privado</option>
+                        </select>
+                        {errors.visibility && (
+                            <p className="text-red-500">Este campo es requerido</p>
+                        )}
+                    </>
+                }
 
                 <label htmlFor="image">Imagen(opcional)</label>
                 <input

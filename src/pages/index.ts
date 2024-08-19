@@ -3,3 +3,7 @@ export * from "./votation/HomePage";
 export * from "./votation/SelectedPage";
 export * from "./votation/CreateVotation";
 export * from "./common/NotFoundPage";
+export * from "./dashboard/dashboard-general";
+export * from "./dashboard/dashboard-settings";
+export * from "./dashboard/dashboard-user";
+export * from "./dashboard/dashboard-votation";

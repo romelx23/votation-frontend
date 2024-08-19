@@ -9,4 +9,5 @@ export interface AddForm {
   autor: string;
   color: string;
   expiration: string;
+  visibility?: boolean;
 }

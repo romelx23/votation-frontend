@@ -1,3 +1,4 @@
+import { create } from "zustand";
 type typeForm = "anime" | "general";
 
 export interface Votation {
@@ -17,6 +18,17 @@ export interface Item {
   mal_id?: number;
 }
 
+export interface IVotationState {
+  name: string;
+  description: string;
+  image: string;
+  cantidad: number;
+  autor: string;
+  color: string;
+  expiration: string;
+  visibility: boolean;
+}
+
 export interface IVotations {
   uid: string;
   title: string;
@@ -24,6 +36,11 @@ export interface IVotations {
   image: string;
   color: string;
   creator: string;
+  expiration: string;
+  type_form: typeForm;
+  visibility: boolean;
+  user: string;
+  createdAt: string;
 }
 
 export interface VotationResponse {
@@ -34,6 +51,8 @@ export interface VotationResponse {
     color: string;
     creator: string;
     status: boolean;
+    visibility: boolean;
+    user: string;
     // date: string;
     expiration: string;
     type_form: typeForm;
