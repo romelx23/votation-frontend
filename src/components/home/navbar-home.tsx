@@ -11,7 +11,9 @@ const NavbarHome = () => {
     console.log({ user });
 
     useEffect(() => {
-        revalidate();
+        if (!user) {
+            revalidate();
+        }
     }, []);
     return (
         <header>

@@ -56,6 +56,17 @@ export const animeSlice = createSlice({
     setConfiguration: (state, action: PayloadAction<Configuration>) => {
       state.configuration = action.payload;
     },
+    cleanConfiguration: (state) => {
+      state.configuration = {
+        name: "",
+        description: "",
+        image: "",
+        cantidad: 0,
+        color: "",
+        autor: "",
+        expiration: "",
+      };
+    },
     deleteAnime: (state, action: PayloadAction<number>) => {
       state.animeList = state.animeList.filter(
         (anime) => anime.mal_id !== action.payload
@@ -82,6 +93,7 @@ export const {
   clearAnimeList,
   setShow,
   setConfettiActive,
+  cleanConfiguration,
 } = animeSlice.actions;
 
 export default animeSlice.reducer;

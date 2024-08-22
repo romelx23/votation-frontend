@@ -1,4 +1,5 @@
 import React from 'react'
+import { cn } from '../../helpers/cn';
 // import { useAppSelector } from '../../hooks/redux/useAppSelector';
 // import { useAppDispatch } from '../../hooks/redux/useAppDispatch';
 // import { deleteAnime, setShow } from '../../store/slices';
@@ -12,6 +13,7 @@ interface ModalAnimeProps {
     // show: boolean;
     isOpen: boolean;
     onClose: () => void;
+    className?: string;
 }
 
 export const ModalWrapper = ({
@@ -20,7 +22,8 @@ export const ModalWrapper = ({
     children,
     // show,
     isOpen,
-    onClose
+    onClose,
+    className
 }: ModalAnimeProps) => {
 
     return (
@@ -29,7 +32,7 @@ export const ModalWrapper = ({
                 onClick={onClose}
             >
             </div>
-            <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex flex-col justify-center p-2 max-w-2xl overflow-hidden transition-all transform bg-gray-800 rounded-lg shadow-xl h-[80vh] my-3 mx-2 z-[60] ${ isOpen ? '' : 'hidden' }`}>
+            <div className={cn(`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex flex-col justify-center p-2 max-w-2xl overflow-hidden transition-all transform bg-gray-800 rounded-lg shadow-xl h-[80vh] my-3 mx-2 z-[60] ${ isOpen ? '' : 'hidden' } ${ className }`)}>
                 <div className="flex absolute top-4 left-3">
                     {
                         leftTitle

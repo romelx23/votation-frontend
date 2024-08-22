@@ -422,6 +422,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@react-oauth/google@^0.12.1":
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/@react-oauth/google/-/google-0.12.1.tgz#b76432c3a525e9afe076f787d2ded003fcc1bee9"
+  integrity sha512-qagsy22t+7UdkYAiT5ZhfM4StXi9PPNvw0zuwNmabrWyMKddczMtBIOARflbaIj+wHiQjnMAsZmzsUYuXeyoSg==
+
 "@reduxjs/toolkit@^1.8.5":
   version "1.9.6"
   resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.9.6.tgz#fc968b45fe5b17ff90932c4556960d9c1078365a"
@@ -673,6 +678,11 @@ csstype@^3.0.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
+
+date-fns-tz@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/date-fns-tz/-/date-fns-tz-3.1.3.tgz#643dfc7157008a3873cd717973e4074bb802f962"
+  integrity sha512-ZfbMu+nbzW0mEzC8VZrLiSWvUIaI3aRHeq33mTe7Y38UctKukgqPR4nTDwcwS4d64Gf8GghnVsroBuMY3eiTeA==
 
 date-fns@^3.6.0:
   version "3.6.0"

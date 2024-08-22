@@ -1,6 +1,6 @@
 import { FC, useContext, useEffect, useReducer } from "react";
 import { useAppDispatch, useAppSelector, useSocket, useVotation } from "../../hooks";
-import { ResGetVotations, Votation, VotationResponse, IVotations } from "../../interfaces";
+import { ResGetVotations, Votation, VotationResponse, IVotations, VotationCreate } from "../../interfaces";
 import { setVotation, setVote } from "../../store/slices";
 import { SocketContext, SocketReducer, VoteContext } from "../index";
 // import.meta.env.BASE_URL;
@@ -26,7 +26,7 @@ export const SocketProvider: FC<Props> = ({ children }) => {
   const { votation: votacion } = useAppSelector(state => state.votation);
   // const { setVotation } = useContext(VoteContext);
 
-  const createVotation = (votation: Votation) => {
+  const createVotation = (votation: VotationCreate) => {
     console.log("createVotation", votation);
     socket.emit("create-votation", votation);
   };

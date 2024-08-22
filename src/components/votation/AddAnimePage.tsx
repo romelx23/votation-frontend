@@ -41,7 +41,7 @@ export const AddAnimePage: React.FC<AddAnimePageProps> = ({ anime, loading, getA
 
     return (
         <>
-            <div className='w-full max-w-2xl'>
+            <div className='w-full max-w-2xl min-h-[40vh]'>
 
                 {
                     isSticky ?

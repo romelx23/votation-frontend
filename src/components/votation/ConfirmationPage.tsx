@@ -2,6 +2,7 @@ import { FC } from "react";
 import { useAppDispatch, useAppSelector, useVotation } from "../../hooks";
 import { ISelectedAnime } from "../../interfaces";
 import { deleteAnime } from "../../store/slices";
+import { formatInTimeZone } from "date-fns-tz";
 
 // name: "",
 // description: "",
@@ -12,9 +13,10 @@ import { deleteAnime } from "../../store/slices";
 
 interface ConfirmationPageProps {
     id?: string;
+    onClose?: () => void;
 }
 
-export const ConfirmationPage: FC<ConfirmationPageProps> = ({ id }) => {
+export const ConfirmationPage: FC<ConfirmationPageProps> = ({ id, onClose }) => {
 
     const {
         animeList,
@@ -25,8 +27,19 @@ export const ConfirmationPage: FC<ConfirmationPageProps> = ({ id }) => {
             image,
             color,
             autor,
+            expiration
         },
     } = useAppSelector((state) => state.anime);
+
+    // console.log(
+    //     cantidad,
+    //     name,
+    //     description,
+    //     image,
+    //     color,
+    //     autor,
+    //     expiration
+    // );
     const { handleCreateVotationAnime, handleUpdateVotationAnime } = useVotation();
 
     const dispatch = useAppDispatch();
@@ -47,6 +60,10 @@ export const ConfirmationPage: FC<ConfirmationPageProps> = ({ id }) => {
                         <p><span className="font-bold text-sm">Cantidad de animes a escoger:</span> {cantidad}</p>
                         <p><span className="font-bold text-sm">Color del Top:</span> {color}</p>
                         <p><span className="font-bold text-sm">Autor:</span> {autor}</p>
+                        {
+                            expiration &&
+                            <p><span className="font-bold text-sm">Fecha de expiración:</span> {formatInTimeZone(expiration, 'UTC', 'yyyy-MM-dd')}</p>
+                        }
                         <img src={image} alt={name} className="w-20 h-20 object-cover" />
                     </div>
 
@@ -99,7 +116,10 @@ export const ConfirmationPage: FC<ConfirmationPageProps> = ({ id }) => {
                 {
                     id &&
                     <button
-                        onClick={() => handleUpdateVotationAnime(id)}
+                        onClick={() => {
+                            handleUpdateVotationAnime(id)
+                            onClose && onClose();
+                        }}
                         className="btn h-10 gap-2 w-full mt-3">
                         Actualizar Encuesta
                     </button>

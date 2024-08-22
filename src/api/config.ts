@@ -24,6 +24,7 @@ export const votationApi = axios.create({
 votationApi.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("x-token"); // Get token from local storage
+    console.log(token);
     // Check if token exists
     if (token) {
       config.headers?.["x-token"] && (config.headers["x-token"] = token); // Add token to headers

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-type typeForm = "anime" | "general";
+export type typeForm = "anime" | "general";
 
 export interface Votation {
   title: string;
@@ -10,6 +10,30 @@ export interface Votation {
   expiration: string;
   type_form: typeForm;
   items: Item[];
+}
+
+export interface VotationCreate {
+  title: string;
+  description: string;
+  color: string;
+  creator: string;
+  image: string;
+  expiration: string;
+  type_form: typeForm;
+  items: Item[];
+  user?: string;
+}
+
+export interface VotationUpdate {
+  title: string;
+  description: string;
+  color: string;
+  creator: string;
+  image: string;
+  expiration: string;
+  type_form: typeForm;
+  items: Item[];
+  user?: string;
 }
 
 export interface Item {

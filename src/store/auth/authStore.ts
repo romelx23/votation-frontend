@@ -18,6 +18,7 @@ interface AuthStore {
   login: (email: string, password: string) => void;
   register: (name: string, email: string, password: string) => void;
   revalidate: () => void;
+  loginWithGoogle: (idToken: string) => void;
   logout: () => void;
 }
 
@@ -141,6 +142,19 @@ export const useAuthStore = create<AuthStore>()(
         }
       } catch (error) {
         console.error("Error revalidating token:", error);
+        set({ isAuthenticated: false, user: null });
+      }
+    },
+    loginWithGoogle: async (idToken: string) => {
+      try {
+        const response = await votationApi.post("/auth/google", {
+          id_token: idToken,
+        });
+        console.log({ response: response.data });
+        localStorage.setItem("x-token", response.data.token);
+        set({ isAuthenticated: true, user: response.data.user });
+      } catch (error) {
+        console.error("Error signing in with Google:", error);
         set({ isAuthenticated: false, user: null });
       }
     },

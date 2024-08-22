@@ -1,14 +1,15 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
-import { Stadistics, VotationLayout } from '../../components'
-import { useAppSelector, useVotation, useVisible, useAppDispatch } from '../../hooks';
-import { StadisticsTopTen } from '../../components/votation/StadisticsTopTen';
 import { toast } from 'sonner';
-import { setAnimeList, setAnimeListCollection, setConfettiActive, setConfiguration } from '../../store/slices';
-import { differenceInDays, format, isBefore } from 'date-fns';
-import { es } from 'date-fns/locale/es';
-import { ModalWrapper } from '../../components/ui/ModalWrapper';
+import { differenceInDays, isBefore } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import Confetti from 'react-confetti';
+// import { es } from 'date-fns/locale/es';
+import { Stadistics, VotationLayout } from '../../components'
+import { useAppSelector, useVotation, useAppDispatch } from '../../hooks';
+import { StadisticsTopTen } from '../../components/votation/StadisticsTopTen';
+import { setAnimeListCollection, setConfettiActive, setConfiguration } from '../../store/slices';
+import { ModalWrapper } from '../../components/ui/ModalWrapper';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import { CopyPhoto } from '../../components/ui/CopyPhoto';
 
@@ -38,24 +39,24 @@ export const VotationPage = () => {
     const [toggleInfo, setToggleInfo] = useState(false);
     // const { toggleInfo, counter, isVisible } = useVisible(40, 500);
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { value, checked } = e.target;
-
+    // const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    // const { value, checked } = e.target;
+    const handleChange = (e: MouseEvent<HTMLInputElement>) => {
+        const { value, checked } = e.currentTarget;
         // no mas de 5 seleccionados
 
-        if (selected.length >= 5) {
-            e.preventDefault();
-            toast.error('Solo puedes seleccionar hasta 5 animes');
-            return;
-        }
-
         if (checked) {
+            if (selected.length >= 10) {
+                e.preventDefault();
+                toast.error('Solo puedes seleccionar hasta 5 animes');
+                return;
+            }
             setSelected([...selected, value]);
-        }
-        else {
+        } else {
             setSelected(selected.filter(item => item !== value));
         }
     }
+
     const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -98,7 +99,7 @@ export const VotationPage = () => {
             cantidad: items.length,
             autor: votation.creator,
             color: votation.color,
-            expiration: format(new Date(votation.expiration), 'yyyy-MM-dd'),
+            expiration: formatInTimeZone(new Date(votation.expiration), 'UTC', 'yyyy-MM-dd'),
         }
 
         console.log(formData);
@@ -183,29 +184,46 @@ export const VotationPage = () => {
                                 </p> */}
                                 <p className='text-base text-gray-400 lowercase'>
                                     {
-                                        format(currentDate, 'dd/MM/yyyy hh:mm a', {
-                                            locale: es
+                                        formatInTimeZone(currentDate, 'UTC', 'dd/MM/yyyy hh:mm a', {
+                                            // timeZone: 'UTC'
                                         })
                                         + " "
                                     }
                                     -
                                     {" " +
-                                        format(expirationDate, 'dd/MM/yyyy hh:mm a')
+                                        formatInTimeZone(expirationDate, 'UTC', 'dd/MM/yyyy hh:mm a', {
+                                            // timeZone: 'UTC'
+                                        })
                                     }
                                 </p>
                                 <p className='text-sm text-white font-semibold bg-violet-600 px-3 py-1 flex gap-2 my-1 items-center'>
-                                    Faltan
-                                    <span className='text-lg'>
-                                        {
-                                            " " + differenceInDays(expirationDate, new Date()) + " "
-                                        }
-                                    </span>
-                                    días para que termine la votación
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-alert-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
+                                    {
+                                        !isBefore(expirationDate, new Date()) &&
+                                        <>
+                                            Faltan
+                                            <span className='text-lg'>
+                                                {
+                                                    " " + differenceInDays(expirationDate, new Date()) + " "
+                                                }
+                                            </span>
+                                            días para que termine la votación
+                                        </>
+                                    }
+                                    {
+                                        isBefore(expirationDate, new Date()) &&
+                                        <>
+                                            La votación ha terminado hace
+                                            {
+                                                " " + differenceInDays(new Date(), expirationDate) + " "
+                                            }
+                                            días
+                                        </>
+                                    }
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-alert-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
                                 </p>
                                 {
                                     isBefore(expirationDate, new Date()) && <p className='bg-red-600 text-white text-center font-bold leading-4 absolute -rotate-[50deg] -left-4 top-10 px-4 py-1'>
-                                        lavotación <br />
+                                        la votación <br />
                                         ha terminado
                                     </p>
                                 }
@@ -226,7 +244,7 @@ export const VotationPage = () => {
                                             onClick={handleCopyTemplate}
                                             title='Copiar Plantilla'
                                             className='absolute top-14 right-2 hover:bg-blue-500 py-2 px-2 rounded-full transition-colors'>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" strokeLinecap="round" strokeLinejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>
                                         </button>
                                     )
                                 }
@@ -236,7 +254,7 @@ export const VotationPage = () => {
                                         onClick={handleCopyTemplate}
                                         title='Copiar Foto de la votación'
                                         className='absolute top-14 right-2 hover:bg-orange-500 py-2 px-2 rounded-full transition-colors'>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-photo-scan"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 8h.01" /><path d="M6 13l2.644 -2.644a1.21 1.21 0 0 1 1.712 0l3.644 3.644" /><path d="M13 13l1.644 -1.644a1.21 1.21 0 0 1 1.712 0l1.644 1.644" /><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-photo-scan"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 8h.01" /><path d="M6 13l2.644 -2.644a1.21 1.21 0 0 1 1.712 0l3.644 3.644" /><path d="M13 13l1.644 -1.644a1.21 1.21 0 0 1 1.712 0l1.644 1.644" /><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /></svg>
                                     </button>
 
                                 } */}
@@ -263,7 +281,7 @@ export const VotationPage = () => {
                                                 <li key={item.name} className="flex flex-col z-10 anime__item">
                                                     <input type="checkbox" name={`${ i }`} id={`${ i }`} value={item.uid}
                                                         disabled={isVoted}
-                                                        onChange={handleChange} className="check__anime hidden" />
+                                                        onClick={handleChange} className="check__anime hidden" />
                                                     <label htmlFor={`${ i }`} className="p-2 hover:cursor-pointer border-2 border-transparent hover:border-indigo-600">
                                                         <div className="flex justify-between items-center font-semibold">
                                                             <p>{item.name}</p>

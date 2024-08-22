@@ -38,7 +38,7 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState, 
     });
 
     const dispatch = useAppDispatch();
-    const [save, setSave] = useState(false);
+    // const [save, setSave] = useState(false);
     const { user } = useAuthStore();
 
     const { votation: data } = useAppSelector(state => state.votation);
@@ -59,13 +59,13 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState, 
     const saveLocalStorage = () => {
         console.log("se cambio");
         console.log(getValues());
-        localStorage.setItem("form", JSON.stringify(getValues()));
+        sessionStorage.setItem("form", JSON.stringify(getValues()));
         dispatch(setConfiguration(getValues()));
         // dispatch(setErrorMessage(errors));
     };
 
     const loadForm = () => {
-        const form = localStorage.getItem("form");
+        const form = sessionStorage.getItem("form");
         if (form) {
             const formData = JSON.parse(form);
             setValue("name", formData.name);
@@ -77,7 +77,7 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState, 
             setValue("expiration", format(new Date(formData.expiration), 'yyyy-MM-dd'));
             console.log(formData);
             dispatch(setConfiguration(formData));
-            setSave(true);
+            // setSave(true);
         }
     };
 
@@ -112,10 +112,11 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState, 
     // }
 
     useEffect(() => {
-        // if (id===undefined) {
-        //     console.log("se monto");
-        //     loadForm();
-        // }
+        if (!votation) {
+            reset();
+            //     console.log("se monto");
+            //     loadForm();
+        }
         console.log(votation);
         if (votation) {
             setVotationData();
@@ -136,7 +137,7 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState, 
                 }}
                 title='Limpiar Formulario'
                 className='absolute top-20 right-5 bg-blue-600 border-2 border-transparent hover:border-white py-2 px-2 rounded-full transition-colors'>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-restore"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3.06 13a9 9 0 1 0 .49 -4.087" /><path d="M3 4.001v5h5" /><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-restore"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3.06 13a9 9 0 1 0 .49 -4.087" /><path d="M3 4.001v5h5" /><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
             </button>
             <form
                 autoComplete="off"
@@ -281,7 +282,7 @@ export const FormConfiguration: React.FC<FormConfigurationProps> = ({ setState, 
                 </button> */}
                 <button className="btn h-10 gap-2">
                     Siguiente Paso
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
                 </button>
             </form>
         </div>

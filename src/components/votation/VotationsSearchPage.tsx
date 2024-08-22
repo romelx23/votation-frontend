@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 // import { SocketContext } from '../../context';
 import { useAppDispatch, useAppSelector, useVotation } from '../../hooks';
 import { IVotations } from '../../interfaces';
@@ -14,11 +14,14 @@ export const VotationsSearchPage = () => {
     const [load, setLoad] = useState(false);
     const [search, setSearch] = useState('');
     // const [votationFilter, setVotationFIlter] = useState<IVotations[]>([]);
-
     const [currentPage, setCurrentPage] = useState(0);
     const [totalVotations, setTotalVotations] = useState(0);
 
     const dispatch = useAppDispatch();
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const page = queryParams.get('page');
 
     const fetchVotations = async (page = 0, searchQuery = '') => {
         setLoad(true);
@@ -50,7 +53,9 @@ export const VotationsSearchPage = () => {
     };
 
     const handlePageChange = (newPage: number) => {
+        console.log(newPage);
         setCurrentPage(newPage);
+        navigate(`?page=${ newPage }`);
     };
 
     const totalPages = Math.ceil(totalVotations / 10);
@@ -79,6 +84,13 @@ export const VotationsSearchPage = () => {
         e.preventDefault();
         fetchVotations(0, search);
     };
+
+    useEffect(() => {
+        console.log("Current page:", page);
+        if (page) {
+            setCurrentPage(parseInt(page));
+        }
+    }, [page]);
 
     console.log(isConfettiActive);
 
@@ -172,6 +184,12 @@ export const VotationsSearchPage = () => {
                     recycle={false}
                     numberOfPieces={300}
                     onConfettiComplete={() => dispatch(setConfettiActive(false))}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        zIndex: 1000
+                    }}
                 />
             )}
         </>

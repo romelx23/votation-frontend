@@ -1,16 +1,22 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-export const LineChart = () => {
+interface LineChartProps {
+    labels?: string[];
+    dataLine?: number[];
+    title?: string;
+}
+
+export const LineChart: FC<LineChartProps> = ({ labels, dataLine, title }) => {
     const data = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        labels: labels ? labels : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         datasets: [
             {
-                label: 'Sales 2024 (M$)',
-                data: [12, 19, 3, 5, 2, 3, 7],
+                label: title ? title : 'Sales 2024 (M$)',
+                data: dataLine ? dataLine : [0, 0, 0, 0, 0, 0, 0],
                 borderColor: 'rgba(75,192,192,1)',
                 backgroundColor: 'rgba(75,192,192,0.2)',
                 pointBackgroundColor: 'rgba(75,192,192,1)',
@@ -30,7 +36,13 @@ export const LineChart = () => {
             },
             title: {
                 display: true,
-                text: 'Monthly Sales Data',
+                text: title ? title : 'Monthly Sales Data',
+                font: {
+                    family: 'Arial',
+                    size: 20,
+                    weight: 'bold',
+                    lineHeight: 1.2,
+                },
             },
             tooltip: {
                 enabled: true,

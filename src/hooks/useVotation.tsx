@@ -5,17 +5,20 @@ import { useAppDispatch } from "./redux/useAppDispatch";
 import { useAppSelector } from "./redux/useAppSelector";
 import { votationApi } from '../api/config';
 import { useNavigate } from "react-router-dom";
-import { GetVotation, ResGetVotations, Votation, VotationResponse } from "../interfaces";
+import { GetVotation, ResGetVotations, Votation, VotationCreate, VotationResponse, VotationUpdate } from "../interfaces";
 import { toast } from "sonner";
+import { useAuthStore } from "../store/auth/authStore";
 
 export const useVotation = () => {
     const { animeList, show, configuration } = useAppSelector(state => state.anime);
     const dispatch = useAppDispatch();
-    const { createVotation, incrementVote } = useContext(SocketContext);
+    // const { createVotation, incrementVote } = useContext(SocketContext);
+    const { incrementVote } = useContext(SocketContext);
     const navigate = useNavigate();
+    const { user } = useAuthStore();
 
     // function for anime votation
-    const handleCreateVotationAnime = () => {
+    const handleCreateVotationAnime = async () => {
 
         // animeList.length < cantidad * 1 || animeList.length === 0
 
@@ -33,7 +36,7 @@ export const useVotation = () => {
             return;
         }
 
-        const votation: Votation = {
+        const votation: VotationCreate = {
             title: configuration.name,
             description: configuration.description,
             image: configuration.image,
@@ -45,18 +48,30 @@ export const useVotation = () => {
                 name: anime.title,
                 image: anime.image,
                 mal_id: anime.mal_id
-            }))
+            })),
+            user: user?.uid || ''
         }
-        createVotation(votation);
-        dispatch(clearAnimeList());
-        toast.success('Votación creada con éxito');
-        navigate('/');
-        dispatch(setConfettiActive(true));
-        localStorage.removeItem('form');
+        console.log(votation);
+        // createVotation(votation);
+
+        try {
+            const { data: votationsData } = await votationApi.post<ResGetVotations>(`/votation`, {
+                votation
+            }); // Fetch categories
+            console.log({ votationsData });
+
+            dispatch(clearAnimeList());
+            toast.success('Votación creada con éxito');
+            navigate('/');
+            dispatch(setConfettiActive(true));
+            localStorage.removeItem('form');
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const handleUpdateVotationAnime = async (id: string) => {
-        const votation: Votation = {
+        const votation: VotationUpdate = {
             title: configuration.name,
             description: configuration.description,
             image: configuration.image,
@@ -68,11 +83,12 @@ export const useVotation = () => {
                 name: anime.title,
                 image: anime.image,
                 mal_id: anime.mal_id
-            }))
+            })),
+            user: user?.uid || ''
         }
 
         try {
-            const { data: votationsData } = await votationApi.put<ResGetVotations>(`/votation/${ id }`, {
+            const { data: votationsData } = await votationApi.patch<ResGetVotations>(`/votation/${ id }`, {
                 votation
             }); // Fetch categories
             console.log({ votationsData });
@@ -121,8 +137,22 @@ export const useVotation = () => {
     }
 
     // function for normal votation
-    const handleCreateVotation = (votation: Votation) => {
-        createVotation(votation);
+    const handleCreateVotation = async (votation: Votation) => {
+        // createVotation(votation);
+        try {
+            const { data: votationsData } = await votationApi.post<ResGetVotations>(`/votation`, {
+                votation
+            }); // Fetch categories
+            console.log({ votationsData });
+
+            dispatch(clearAnimeList());
+            toast.success('Votación creada con éxito');
+            navigate('/');
+            dispatch(setConfettiActive(true));
+            localStorage.removeItem('form');
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
     }
 
     return {

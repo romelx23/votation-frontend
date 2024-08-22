@@ -97,7 +97,7 @@ export const SelectedAnime = () => {
                                 }}
                                 type='button'
                                 className={`py-1 text-sm font-semibold flex-grow w-10 flex justify-center ${ state ? 'bg-violet-500' : 'bg-gray-500' }`}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
                                 Volver a Configuración
                             </button>
                         }
@@ -114,7 +114,7 @@ export const SelectedAnime = () => {
                                 }}
                                 type='button'
                                 className={`py-1 text-sm font-semibold flex-grow w-10 flex justify-center ${ state ? 'bg-gray-500' : 'bg-violet-500' }`}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
                                 Agregar Anime
                             </button>
                         }
@@ -132,7 +132,7 @@ export const SelectedAnime = () => {
                                 type='button'
                                 className={`py-1 text-sm font-semibold flex-grow w-10 flex justify-center ${ state ? 'bg-gray-500' : 'bg-violet-500' }`}>
                                 Siguiente Paso
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className=""><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
                             </button>
                         }
 
@@ -160,22 +160,33 @@ export const SelectedAnime = () => {
                     </div>
                 </div>
 
-                {state === 1 ?
-                    <FormConfiguration
-                        // state={state}
-                        setState={setState}
-                    />
-                    :
-                    state === 2 ?
+                {
+                    <div className={`${ state === 1 ? 'flex w-full justify-center' : 'hidden' }`}>
+                        <FormConfiguration
+                            // state={state}
+                            setState={setState}
+                        />
+                    </div>
+                }
+
+                {
+                    <div className={`${ state === 2 ? 'flex justify-center w-full max-w-xl' : 'hidden' }`}>
                         <AddAnimePage
                             anime={anime}
                             loading={loading}
                             getAnime={getAnime}
                             error={error}
+                            classNameList="h-[50vh]"
                         />
-                        :
-                        <ConfirmationPage />
+                    </div>
                 }
+
+                {
+                    <div className={`${ state === 3 ? 'flex justify-center w-full max-w-xl' : 'hidden' }`}>
+                        <ConfirmationPage />
+                    </div>
+                }
+
 
             </div>
             <div className="h-20"></div>

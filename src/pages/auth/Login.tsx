@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useAuthStore } from "../../store/auth/authStore";
 import { HomeLayout } from "../../components/layouts/home-layout";
+import { CredentialResponse, GoogleLogin, googleLogout } from "@react-oauth/google";
+import { votationApi } from "../../api/config";
 // import { AuthLayout } from "../layouts/auth-layout";
 
 interface FormValues {
@@ -10,7 +12,7 @@ interface FormValues {
 }
 
 export default function Login() {
-    const { login, error, loading } = useAuthStore();
+    const { login, logout, error, loading, user, loginWithGoogle } = useAuthStore();
     // const navigate = useNavigate();
 
     const {
@@ -41,6 +43,30 @@ export default function Login() {
             // Handle form submission errors (e.g., display error messages)
         }
     }
+
+    // const authWithGoogle = async (idToken: string) => {
+    //     try {
+    //         const response = await votationApi.post('/auth/google', {
+    //             "id_token": idToken
+    //         });
+    //         console.log({ response: response.data });
+    //         // reset();
+    //         // navigate("/dashboard");
+    //     } catch (error) {
+    //         console.error('Error signing in with Google:', error);
+    //         // Handle Google sign-in errors (e.g., display error messages)
+    //     }
+    // }
+
+    const responseMessage = (response: CredentialResponse) => {
+        console.log(response);
+        loginWithGoogle(response.credential || '');
+    };
+    const errorMessage = () => {
+        console.log("error");
+    };
+
+
 
     return (
         // <AuthLayout>
@@ -88,6 +114,35 @@ export default function Login() {
                             type="submit" className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                             Ingrese a su cuenta
                         </button>
+                        <span className="text-center">
+                            o
+                        </span>
+                        {/* <GoogleLogin
+                            onSuccess={credentialResponse => {
+                                console.log(credentialResponse);
+                            }}
+                            onError={() => {
+                                console.log('Login Failed');
+                            }}
+                        /> */}
+                        <div className="flex justify-center">
+                            <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
+                            {
+                                user && <span className="text-blue-500 text-sm">Bienvenido {user.name}</span>
+                            }
+                        </div>
+                        {/* <button
+                            type="button"
+                            className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 flex items-center justify-center gap-2"
+                            onClick={() => {
+                                googleLogout()
+                                logout()
+                            }}>
+                            <span className="font-bold">
+                                Log out
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-logout"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" /><path d="M9 12h12l-3 -3" /><path d="M18 15l3 -3" /></svg>
+                        </button> */}
                     </div>
 
                     <div className="mt-4">
